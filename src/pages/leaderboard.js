@@ -1,21 +1,25 @@
 /* ========================================
    Phantom Tac Toe - Leaderboard Page
+   My Circle (Friends + Recent Opponents) + Global
    ======================================== */
 
 import { loadData } from "../data/storage.js";
+import { showToast } from "../components/toast.js";
 import {
   iconMedal,
   iconFire,
   iconTrophy,
   iconCrown,
   iconStar,
+  iconHeart,
+  iconGlobe,
   avatarIcons,
 } from "../utils/icons.js";
 
 export async function renderLeaderboard(container) {
   const data = loadData();
-  let currentTab = "local";
-  let leaderboardData = data.leaderboard || [];
+  let currentTab = "circle";
+  let leaderboardData = [];
 
   async function updateView() {
     container.innerHTML = `
@@ -25,66 +29,162 @@ export async function renderLeaderboard(container) {
         </h1>
 
         <div class="tabs">
-          <div class="tab ${currentTab === "local" ? "active" : ""}" data-tab="local">Local History</div>
-          <div class="tab ${currentTab === "global" ? "active" : ""}" data-tab="global">Global Ranking</div>
+          <div class="tab ${currentTab === "circle" ? "active" : ""}" data-tab="circle">${iconHeart} My Circle</div>
+          <div class="tab ${currentTab === "global" ? "active" : ""}" data-tab="global">${iconGlobe} Global</div>
         </div>
 
         <div id="leaderboard-content">
-          ${renderList(leaderboardData, currentTab)}
+          ${currentTab === "circle" ? '<div style="text-align:center; padding: 40px; color: var(--text-tertiary)">Loading your circle...</div>' : ""}
+          ${currentTab === "global" ? '<div style="text-align:center; padding: 40px; color: var(--text-tertiary)">Loading global scores...</div>' : ""}
         </div>
       </div>
     `;
+
+    // Load data based on tab
+    if (currentTab === "circle") {
+      await loadCircleData(data);
+    } else {
+      await loadGlobalData(data);
+    }
 
     // Tab switching
     container.querySelectorAll(".tab").forEach((tab) => {
       tab.addEventListener("click", async () => {
         const tabType = tab.dataset.tab;
         if (tabType === currentTab) return;
-
         currentTab = tabType;
-        if (currentTab === "global") {
-          const content = container.querySelector("#leaderboard-content");
-          content.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-tertiary)">Loading global scores...</div>`;
-
-          if (window.convexClient) {
-            try {
-              const globalData = await window.convexClient.query(
-                "leaderboard:getGlobalLeaderboard",
-              );
-              leaderboardData = globalData.map((u) => ({
-                name: u.name,
-                score: u.wins,
-                streak: u.bestStreak,
-                activeFrame: u.activeFrame || "none",
-                isGlobal: true,
-              }));
-            } catch (err) {
-              console.error("Failed to fetch global leaderboard:", err);
-              showToast("Failed to load global scores", "alert");
-            }
-          } else {
-            leaderboardData = [];
-          }
-        } else {
-          leaderboardData = data.leaderboard || [];
-        }
         updateView();
       });
     });
   }
 
-  function renderList(list, type) {
-    if (list.length === 0) {
-      return `
-        <div style="text-align: center; padding: var(--space-3xl); color: var(--text-tertiary)">
-          <div class="icon-lg" style="margin-bottom: var(--space-md); color: var(--neon-gold)">${iconTrophy}</div>
-          <h3 style="margin-bottom: var(--space-sm); color: var(--text-secondary)">
-            ${type === "global" ? "Cloud connection required" : "No entries yet"}
-          </h3>
-          <p>${type === "global" ? "Sign in to see how you stack up against the world!" : "Start playing to climb the ranks!"}</p>
-        </div>
-      `;
+  async function loadCircleData(data) {
+    const content = container.querySelector("#leaderboard-content");
+    const clerkId = data.profile.clerkUserId;
+
+    if (!clerkId || !window.convexClient) {
+      content.innerHTML = renderEmptyState("circle");
+      return;
     }
+
+    try {
+      // Get friends data
+      const friends = await window.convexClient.query("friends:getFriends", {
+        clerkId,
+      });
+
+      // Get recent opponents from local storage
+      const recentOpponents = data.recentOpponents || [];
+      const recentIds = recentOpponents
+        .map((o) => o.clerkId)
+        .filter((id) => id && !friends.some((f) => f.clerkId === id));
+
+      let recentUsers = [];
+      if (recentIds.length > 0) {
+        try {
+          recentUsers = await window.convexClient.query("users:getUsersByIds", {
+            clerkIds: recentIds,
+          });
+        } catch (e) {
+          console.warn("Failed to fetch recent opponents:", e);
+        }
+      }
+
+      // Combine friends + recent opponents + self
+      const circleEntries = [];
+
+      // Add self
+      circleEntries.push({
+        name: data.profile.name,
+        clerkId,
+        score: data.stats.wins,
+        streak: data.stats.bestStreak,
+        level: data.profile.level,
+        activeFrame: data.cosmetics?.activeFrame || "none",
+        avatarIndex: data.profile.avatar || 0,
+        isSelf: true,
+      });
+
+      // Add friends
+      for (const f of friends) {
+        circleEntries.push({
+          name: f.name,
+          clerkId: f.clerkId,
+          score: f.wins,
+          streak: f.bestStreak,
+          level: f.level,
+          activeFrame: f.activeFrame || "none",
+          avatarIndex: f.avatarIndex || 0,
+          isFriend: true,
+        });
+      }
+
+      // Add recent opponents (not already friends)
+      for (const u of recentUsers) {
+        circleEntries.push({
+          name: u.name,
+          clerkId: u.clerkId,
+          score: u.wins,
+          streak: u.bestStreak,
+          level: u.level,
+          activeFrame: u.activeFrame || "none",
+          avatarIndex: u.avatarIndex || 0,
+          isRecent: true,
+        });
+      }
+
+      // Sort by wins
+      circleEntries.sort((a, b) => b.score - a.score);
+
+      content.innerHTML = renderList(circleEntries, "circle", data);
+    } catch (err) {
+      console.error("Failed to load circle data:", err);
+      content.innerHTML = renderEmptyState("circle");
+    }
+  }
+
+  async function loadGlobalData(data) {
+    const content = container.querySelector("#leaderboard-content");
+
+    if (!window.convexClient) {
+      content.innerHTML = renderEmptyState("global");
+      return;
+    }
+
+    try {
+      const globalData = await window.convexClient.query(
+        "leaderboard:getGlobalLeaderboard",
+      );
+      const entries = globalData.map((u) => ({
+        name: u.name,
+        score: u.wins,
+        streak: u.bestStreak,
+        activeFrame: u.activeFrame || "none",
+        avatarIndex: u.avatarIndex || 0,
+        isGlobal: true,
+      }));
+      content.innerHTML = renderList(entries, "global", data);
+    } catch (err) {
+      console.error("Failed to fetch global leaderboard:", err);
+      showToast("Failed to load global scores", "alert");
+      content.innerHTML = renderEmptyState("global");
+    }
+  }
+
+  function renderEmptyState(type) {
+    return `
+      <div style="text-align: center; padding: var(--space-3xl); color: var(--text-tertiary)">
+        <div class="icon-lg" style="margin-bottom: var(--space-md); color: var(--neon-gold)">${iconTrophy}</div>
+        <h3 style="margin-bottom: var(--space-sm); color: var(--text-secondary)">
+          ${type === "global" ? "Cloud connection required" : "Add friends to see your circle"}
+        </h3>
+        <p>${type === "global" ? "Sign in to see how you stack up against the world!" : "Your friends and recent opponents will appear here"}</p>
+      </div>
+    `;
+  }
+
+  function renderList(list, type, data) {
+    if (list.length === 0) return renderEmptyState(type);
 
     return `
       <div class="leaderboard-list" style="display: flex; flex-direction: column; gap: var(--space-sm)">
@@ -92,19 +192,23 @@ export async function renderLeaderboard(container) {
           .slice(0, 50)
           .map(
             (entry, i) => `
-          <div class="leaderboard-entry ${entry.name === data.profile.name ? "card-glow" : ""}" style="animation: slideInUp 0.4s ease ${i * 30}ms both">
+          <div class="leaderboard-entry ${entry.isSelf ? "card-glow" : ""}" style="animation: slideInUp 0.4s ease ${i * 30}ms both">
             <div class="leaderboard-rank">${getRankDisplay(i + 1)}</div>
             <div class="profile-frame frame-${entry.activeFrame || "none"}">
               <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple)">
-                ${getAvatarIcon(i)}
+                ${avatarIcons[entry.avatarIndex % avatarIcons.length]}
               </div>
             </div>
             <div style="flex: 1; min-width: 0">
-              <div style="font-family: var(--font-display); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                ${entry.name}${entry.name === data.profile.name ? ' <span style="color: var(--neon-purple)">(You)</span>' : ""}
+              <div style="font-family: var(--font-display); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px">
+                ${entry.name}
+                ${entry.isSelf ? ' <span style="color: var(--neon-purple)">(You)</span>' : ""}
+                ${entry.isFriend ? ` <span style="color: var(--neon-cyan); font-size: 10px">${iconHeart}</span>` : ""}
+                ${entry.isRecent ? ' <span style="font-size: 10px; color: var(--text-tertiary)">Recent</span>' : ""}
               </div>
               <div style="font-size: var(--text-xs); color: var(--text-tertiary); display: flex; align-items: center; gap: 4px">
                 <span class="icon-xs" style="color: var(--neon-gold)">${iconFire}</span> ${entry.streak || 0} best streak
+                ${entry.level ? ` • Lv.${entry.level}` : ""}
               </div>
             </div>
             <div style="text-align: right">
@@ -133,8 +237,4 @@ function getRankDisplay(rank) {
     default:
       return `#${rank}`;
   }
-}
-
-function getAvatarIcon(index) {
-  return avatarIcons[index % avatarIcons.length];
 }

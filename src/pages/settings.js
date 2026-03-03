@@ -111,8 +111,6 @@ export function renderSettings(container) {
         </div>
       </div>
 
-      </div>
-
       <!-- Theme & Appearance -->
       <div class="section-header">
         <h2 class="section-title">Appearance</h2>

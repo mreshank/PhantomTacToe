@@ -125,6 +125,7 @@ const DEFAULT_DATA = {
     history: [],
   },
   leaderboard: [],
+  recentOpponents: [],
 };
 
 let cachedData = null;
@@ -355,4 +356,30 @@ export function canClaimDailyReward() {
   const data = loadData();
   const today = new Date().toISOString().split("T")[0];
   return data.dailyReward.lastClaimed !== today;
+}
+
+/**
+ * Track a recent online opponent for the "My Circle" leaderboard.
+ * Keeps only the last 5 unique opponents (by clerkId).
+ */
+export function addRecentOpponent(opponentInfo) {
+  if (!opponentInfo?.clerkId) return;
+  const data = loadData();
+  if (!data.recentOpponents) data.recentOpponents = [];
+
+  // Remove existing entry for this opponent
+  data.recentOpponents = data.recentOpponents.filter(
+    (o) => o.clerkId !== opponentInfo.clerkId,
+  );
+
+  // Add to front
+  data.recentOpponents.unshift({
+    clerkId: opponentInfo.clerkId,
+    name: opponentInfo.name,
+    playedAt: Date.now(),
+  });
+
+  // Keep only 5
+  data.recentOpponents = data.recentOpponents.slice(0, 5);
+  saveData(data);
 }

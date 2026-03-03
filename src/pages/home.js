@@ -22,6 +22,7 @@ import {
   iconInfinite,
   iconSparkle,
   iconMuscle,
+  iconRocket,
   avatarIcons,
 } from "../utils/icons.js";
 
@@ -91,11 +92,24 @@ export function renderHome(container) {
           : ""
       }
 
+      <!-- Quick Play Hero -->
+      <div style="text-align: center; margin-bottom: var(--space-xl)">
+        <button class="btn btn-lg" id="btn-quick-play" style="background: var(--gradient-main); padding: var(--space-md) var(--space-2xl); font-size: var(--text-xl); box-shadow: var(--shadow-neon-purple); border-radius: var(--radius-xl)">
+          ${iconRocket} Quick Play Online
+        </button>
+      </div>
+
       <!-- Game Mode Cards -->
       <div class="section-header">
         <h2 class="section-title">Play</h2>
       </div>
       <div class="mode-cards">
+        <button class="mode-card mode-card-featured" data-mode="online" id="btn-online" style="border: 1px solid var(--neon-cyan); box-shadow: var(--shadow-neon-cyan); position: relative; overflow: visible">
+          <span class="popular-badge">POPULAR</span>
+          <span class="mode-icon">${iconGlobe}</span>
+          <div class="mode-title">Online Battle</div>
+          <div class="mode-desc">Play with friends</div>
+        </button>
         <button class="mode-card" data-mode="solo" id="btn-solo">
           <span class="mode-icon">${iconRobot}</span>
           <div class="mode-title">Solo Play</div>
@@ -105,11 +119,6 @@ export function renderHome(container) {
           <span class="mode-icon">${iconGamepad}</span>
           <div class="mode-title">Local Duel</div>
           <div class="mode-desc">Same device, 2 players</div>
-        </button>
-        <button class="mode-card" data-mode="online" id="btn-online">
-          <span class="mode-icon">${iconGlobe}</span>
-          <div class="mode-title">Online Battle</div>
-          <div class="mode-desc">Play with friends</div>
         </button>
       </div>
 
@@ -155,7 +164,14 @@ export function renderHome(container) {
   const soloBtn = document.getElementById("btn-solo");
   const localBtn = document.getElementById("btn-local");
   const onlineBtn = document.getElementById("btn-online");
+  const quickPlayBtn = document.getElementById("btn-quick-play");
   const claimBtn = document.getElementById("claim-daily-btn");
+
+  quickPlayBtn?.addEventListener("click", () => {
+    audio.playClick();
+    vibrateClick();
+    router.navigate("/play/online/lobby");
+  });
 
   soloBtn?.addEventListener("click", () => {
     audio.playClick();
@@ -190,6 +206,7 @@ export function renderHome(container) {
 function addHomeStyles() {
   if (document.getElementById("home-styles")) return;
   const style = document.createElement("style");
+  // Popular badge + featured card styles are appended below
   style.id = "home-styles";
   style.textContent = `
     .hero-section {
@@ -269,6 +286,24 @@ function addHomeStyles() {
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: var(--space-md);
       margin-bottom: var(--space-lg);
+    }
+    .mode-card-featured {
+      animation: pulse-glow 3s infinite;
+    }
+    .popular-badge {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: var(--gradient-main);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      font-family: var(--font-display);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.1em;
+      box-shadow: var(--shadow-neon-purple);
+      z-index: 2;
     }
     .how-it-works {
       border-color: rgba(255, 214, 10, 0.15);

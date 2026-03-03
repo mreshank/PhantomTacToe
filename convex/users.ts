@@ -62,3 +62,45 @@ export const getUserByClerkId = query({
       .unique();
   },
 });
+
+export const updateOnlineStatus = mutation({
+  args: { clerkId: v.string(), isOnline: v.boolean() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
+    if (user) {
+      await ctx.db.patch(user._id, {
+        isOnline: args.isOnline,
+        lastSeen: Date.now(),
+      });
+    }
+  },
+});
+
+export const getUsersByIds = query({
+  args: { clerkIds: v.array(v.string()) },
+  handler: async (ctx, args) => {
+    const users = [];
+    for (const id of args.clerkIds) {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_clerkId", (q) => q.eq("clerkId", id))
+        .unique();
+      if (user) {
+        users.push({
+          clerkId: user.clerkId,
+          name: user.name,
+          level: user.level,
+          wins: user.wins,
+          bestStreak: user.bestStreak,
+          avatarUrl: user.avatarUrl,
+          avatarIndex: user.avatarIndex,
+          activeFrame: user.activeFrame,
+        });
+      }
+    }
+    return users;
+  },
+});

@@ -28,6 +28,7 @@ import {
   iconLeaderboard,
   iconRewards,
   iconSettings,
+  iconHeart,
 } from "./utils/icons.js";
 
 // Pages
@@ -37,6 +38,7 @@ import { renderOnlineLobby, renderJoinRoom } from "./pages/online.js";
 import { renderRewards } from "./pages/rewards.js";
 import { renderLeaderboard } from "./pages/leaderboard.js";
 import { renderSettings } from "./pages/settings.js";
+import { renderFriends } from "./pages/friends.js";
 
 // ---- Initialize App ---- //
 async function initApp() {
@@ -111,6 +113,10 @@ async function initApp() {
     updateNav("/settings");
     renderSettings(c);
   });
+  router.addRoute("/friends", (c) => {
+    updateNav("/friends");
+    return renderFriends(c);
+  });
 
   // Initialize audio on first interaction
   document.addEventListener("pointerdown", () => audio.init(), { once: true });
@@ -159,6 +165,10 @@ function createNavigation(app) {
         <span class="nav-icon">${iconSettings}</span>
         <span class="nav-label">Settings</span>
       </a>
+      <a class="nav-item" href="#/friends" data-route="/friends">
+        <span class="nav-icon">${iconHeart}</span>
+        <span class="nav-label">Friends</span>
+      </a>
     </div>
   `;
   app.appendChild(desktopNav);
@@ -181,9 +191,9 @@ function createNavigation(app) {
         <span class="nav-icon">${iconLeaderboard}</span>
         <span class="nav-label">Ranks</span>
       </a>
-      <a class="nav-item" href="#/rewards" data-route="/rewards">
-        <span class="nav-icon">${iconRewards}</span>
-        <span class="nav-label">Rewards</span>
+      <a class="nav-item" href="#/friends" data-route="/friends">
+        <span class="nav-icon">${iconHeart}</span>
+        <span class="nav-label">Friends</span>
       </a>
       <a class="nav-item" href="#/settings" data-route="/settings">
         <span class="nav-icon">${iconSettings}</span>

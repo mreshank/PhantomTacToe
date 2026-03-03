@@ -4,6 +4,7 @@
 
 import {
   loadData,
+  saveData,
   getXPProgress,
   canClaimDailyReward,
   claimDailyReward,
