@@ -34,6 +34,7 @@ export async function syncWithCloud(convexClient) {
       bestStreak: data.stats.bestStreak,
       coins: data.stats.coins,
       achievements: data.stats.achievements || [],
+      activeFrame: data.cosmetics.activeFrame,
     });
 
     if (cloudProfile) {
@@ -59,6 +60,10 @@ export async function syncWithCloud(convexClient) {
             coins: cloudProfile.coins,
             bestStreak: cloudProfile.bestStreak,
             achievements: cloudProfile.achievements,
+          },
+          cosmetics: {
+            ...data.cosmetics,
+            activeFrame: cloudProfile.activeFrame || data.cosmetics.activeFrame,
           },
         });
       }
@@ -109,6 +114,10 @@ const DEFAULT_DATA = {
     owned: ["neon", "classic"],
     equippedBoard: "neon",
     equippedPiece: "classic",
+    activeTheme: "neon",
+    unlockedThemes: ["neon"],
+    activeFrame: "none",
+    unlockedFrames: ["none"],
   },
   dailyReward: {
     lastClaimed: null,
@@ -141,6 +150,12 @@ export function loadData() {
     profile: { ...DEFAULT_DATA.profile, createdAt: Date.now() },
   };
   saveData(cachedData);
+
+  // Apply theme on load
+  if (cachedData.profile.activeTheme) {
+    applyTheme(cachedData.profile.activeTheme);
+  }
+
   return cachedData;
 }
 
@@ -162,7 +177,24 @@ export function updateProfile(updates) {
   const data = loadData();
   Object.assign(data.profile, updates);
   saveData(data);
+
+  // Auto-apply theme if changed
+  if (updates.activeTheme) {
+    applyTheme(updates.activeTheme);
+  }
+
   return data;
+}
+
+/**
+ * Apply a theme class to the body
+ */
+export function applyTheme(themeId) {
+  const themes = ["neon", "gold", "emerald", "obsidian", "royal"];
+  document.body.classList.remove(...themes.map((t) => `theme-${t}`));
+  if (themeId !== "neon") {
+    document.body.classList.add(`theme-${themeId}`);
+  }
 }
 
 export function updateStats(updates) {

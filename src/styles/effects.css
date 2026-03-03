@@ -1,0 +1,119 @@
+/* ========================================
+   Phantom Tac Toe - Elite Achievement Effects
+   ======================================== */
+
+/* Profile Frame Base */
+.profile-frame {
+    position: relative;
+    display: inline-block;
+    padding: 4px;
+    border-radius: var(--radius-full);
+    z-index: 1;
+}
+
+/* Frame Types */
+.frame-none {
+    padding: 0;
+}
+
+.frame-neon {
+    background: var(--gradient-main);
+    box-shadow: var(--shadow-neon-purple);
+    animation: pulseNeon 2s infinite alternate;
+}
+
+.frame-gold {
+    background: var(--gradient-gold);
+    box-shadow: var(--shadow-neon-gold);
+    background-size: 200% 200%;
+    animation: shineGold 3s linear infinite;
+}
+
+.frame-emerald {
+    background: var(--neon-green);
+    box-shadow: var(--shadow-neon-green);
+    animation: matrixScan 4s infinite linear;
+}
+
+.frame-royal {
+    background: var(--neon-pink);
+    box-shadow: var(--shadow-neon-pink);
+    animation: royalPulse 1.5s infinite;
+}
+
+/* Animations */
+@keyframes pulseNeon {
+    from {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    to {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+@keyframes shineGold {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes matrixScan {
+    0% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+
+    50% {
+        filter: hue-rotate(90deg) brightness(1.5);
+    }
+
+    100% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+}
+
+@keyframes royalPulse {
+    0% {
+        box-shadow: 0 0 0 0 var(--neon-pink-glow);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(255, 55, 95, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 55, 95, 0);
+    }
+}
+
+/* Component Styling Hooks */
+.player-avatar-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: var(--accent-primary);
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--bg-primary);
+    z-index: 2;
+}

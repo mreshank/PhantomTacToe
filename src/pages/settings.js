@@ -111,24 +111,52 @@ export function renderSettings(container) {
         </div>
       </div>
 
-      <!-- Audio -->
+      </div>
+
+      <!-- Theme & Appearance -->
       <div class="section-header">
-        <h2 class="section-title">Audio</h2>
+        <h2 class="section-title">Appearance</h2>
       </div>
       <div class="card" style="margin-bottom: var(--space-xl)">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md)">
-          <span>Sound Effects</span>
-          <label class="toggle">
-            <input type="checkbox" id="sound-toggle" ${settings.soundEnabled ? "checked" : ""} />
-            <span class="toggle-slider"></span>
-          </label>
+        <div style="margin-bottom: var(--space-md)">
+          <label style="display: block; font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-xs)">Global Theme</label>
+          <div class="theme-selector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: var(--space-sm)">
+            ${["neon", "gold", "emerald", "obsidian", "royal"]
+              .map((t) => {
+                const isUnlocked = data.cosmetics.unlockedThemes.includes(t);
+                const isActive = data.profile.activeTheme === t;
+                return `
+                <button class="theme-option ${isActive ? "active" : ""} ${!isUnlocked ? "locked" : ""}" 
+                  data-theme="${t}" 
+                  ${!isUnlocked ? "disabled" : ""}
+                  title="${!isUnlocked ? "Unlock in Rewards" : t}">
+                  <div class="theme-dot theme-${t}"></div>
+                  <span style="font-size: 10px">${t.charAt(0).toUpperCase() + t.slice(1)}</span>
+                </button>
+              `;
+              })
+              .join("")}
+          </div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center">
-          <span>Music</span>
-          <label class="toggle">
-            <input type="checkbox" id="music-toggle" ${settings.musicEnabled ? "checked" : ""} />
-            <span class="toggle-slider"></span>
-          </label>
+        <div>
+          <label style="display: block; font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-xs)">Profile Frame</label>
+          <div class="frame-selector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: var(--space-sm)">
+            ${["none", "neon", "gold", "emerald", "royal"]
+              .map((f) => {
+                const isUnlocked = data.cosmetics.unlockedFrames.includes(f);
+                const isActive = data.profile.activeFrame === f;
+                return `
+                <button class="frame-option ${isActive ? "active" : ""} ${!isUnlocked ? "locked" : ""}" 
+                  data-frame="${f}" 
+                  ${!isUnlocked ? "disabled" : ""}
+                  title="${!isUnlocked ? "Unlock in Rewards" : f}">
+                  <div class="profile-frame frame-${f}" style="width: 20px; height: 20px; border-radius: 50%"></div>
+                  <span style="font-size: 10px">${f === "none" ? "None" : f.charAt(0).toUpperCase() + f.slice(1)}</span>
+                </button>
+              `;
+              })
+              .join("")}
+          </div>
         </div>
       </div>
 
@@ -216,6 +244,32 @@ export function renderSettings(container) {
       btn.style.boxShadow = "var(--shadow-neon-purple)";
       updateProfile({ avatar: parseInt(btn.dataset.avatarIndex, 10) });
       audio.playClick();
+    });
+  });
+
+  // Theme selection
+  document.querySelectorAll(".theme-option").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll(".theme-option")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      updateProfile({ activeTheme: btn.dataset.theme });
+      audio.playClick();
+      showToast(`${btn.dataset.theme} theme applied!`, "sparkle");
+    });
+  });
+
+  // Frame selection
+  document.querySelectorAll(".frame-option").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll(".frame-option")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      updateProfile({ activeFrame: btn.dataset.frame });
+      audio.playClick();
+      showToast(`${btn.dataset.frame} frame equipped!`, "sparkle");
     });
   });
 
@@ -359,6 +413,43 @@ function addSettingsStyles() {
       width: 100%;
       height: 100%;
     }
+    .theme-option, .frame-option {
+      background: var(--bg-tertiary);
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--text-secondary);
+    }
+    .theme-option:hover, .frame-option:hover {
+      border-color: rgba(191, 90, 242, 0.3);
+      transform: translateY(-2px);
+    }
+    .theme-option.active, .frame-option.active {
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+      background: rgba(191, 90, 242, 0.1);
+    }
+    .theme-option.locked, .frame-option.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+    .theme-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--neon-purple);
+    }
+    .theme-gold .theme-dot { background: #ffd60a; }
+    .theme-emerald .theme-dot { background: #30d158; }
+    .theme-obsidian .theme-dot { background: #ffffff; }
+    .theme-royal .theme-dot { background: #ff375f; }
   `;
   document.head.appendChild(style);
 }

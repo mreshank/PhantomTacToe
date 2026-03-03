@@ -15,6 +15,7 @@ export const syncUser = mutation({
     bestStreak: v.number(),
     coins: v.number(),
     achievements: v.array(v.string()),
+    activeFrame: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
@@ -41,6 +42,7 @@ export const syncUser = mutation({
         bestStreak: Math.max(existing.bestStreak, args.bestStreak),
         coins: Math.max(existing.coins, args.coins),
         achievements: Array.from(new Set([...existing.achievements, ...args.achievements])),
+        activeFrame: args.activeFrame || existing.activeFrame,
         lastSeen: userData.lastSeen,
       });
       return await ctx.db.get(existing._id);

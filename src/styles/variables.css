@@ -3,14 +3,7 @@
    =================================== */
 
 :root {
-  /* ---- Color Palette ---- */
-  --bg-primary: #0a0a1a;
-  --bg-secondary: #12122a;
-  --bg-tertiary: #1a1a3e;
-  --bg-card: rgba(26, 26, 62, 0.6);
-  --bg-card-hover: rgba(35, 35, 80, 0.8);
-  
-  /* Neon Accents */
+  /* ---- Theme Colors (Default: Neon) ---- */
   --neon-purple: #bf5af2;
   --neon-purple-glow: rgba(191, 90, 242, 0.4);
   --neon-cyan: #64d2ff;
@@ -21,6 +14,80 @@
   --neon-gold-glow: rgba(255, 214, 10, 0.4);
   --neon-green: #30d158;
   --neon-green-glow: rgba(48, 209, 88, 0.4);
+
+  --accent-primary: var(--neon-purple);
+  --accent-secondary: var(--neon-cyan);
+  --accent-tertiary: var(--neon-pink);
+
+  /* ---- Default Backgrounds (Dark Mode) ---- */
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #12122a;
+  --bg-tertiary: #1a1a3a;
+  --bg-card-hover: rgba(255, 255, 255, 0.05);
+
+  /* ---- Glass Effect ---- */
+  --glass-bg: rgba(26, 26, 62, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 20px;
+
+  /* ---- Typography ---- */
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+
+  --text-xs: clamp(0.625rem, 0.5rem + 0.5vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.65rem + 0.5vw, 0.875rem);
+  --text-base: clamp(0.875rem, 0.75rem + 0.5vw, 1rem);
+  --text-lg: clamp(1rem, 0.85rem + 0.75vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1rem + 1vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
+  --text-3xl: clamp(2rem, 1.5rem + 2vw, 3rem);
+  --text-4xl: clamp(2.5rem, 2rem + 2.5vw, 4rem);
+  --text-hero: clamp(3rem, 2rem + 4vw, 5rem);
+}
+
+/* Theme: Cyber Gold (Master Tier) */
+body.theme-gold {
+  --neon-purple: #ff9f0a;
+  --neon-purple-glow: rgba(255, 159, 10, 0.4);
+  --neon-cyan: #ffd60a;
+  --neon-cyan-glow: rgba(255, 214, 10, 0.4);
+  --accent-primary: #ff9f0a;
+  --accent-secondary: #ffd60a;
+}
+
+/* Theme: Emerald Matrix (Level 50+) */
+body.theme-emerald {
+  --neon-purple: #30d158;
+  --neon-purple-glow: rgba(48, 209, 88, 0.4);
+  --neon-cyan: #64d2ff;
+  --neon-cyan-glow: rgba(100, 210, 255, 0.4);
+  --accent-primary: #30d158;
+  --accent-secondary: #64d2ff;
+}
+
+/* Theme: Obsidian Phantom (Dark Knight) */
+body.theme-obsidian {
+  --bg-primary: #050505;
+  --bg-secondary: #0a0a0a;
+  --neon-purple: #ffffff;
+  --neon-purple-glow: rgba(255, 255, 255, 0.2);
+  --neon-cyan: #404040;
+  --neon-cyan-glow: rgba(64, 64, 64, 0.2);
+  --accent-primary: #ffffff;
+  --accent-secondary: #404040;
+}
+
+/* Theme: Royal Crimson (Daily Streak 30+) */
+body.theme-royal {
+  --neon-purple: #ff375f;
+  --neon-purple-glow: rgba(255, 55, 95, 0.4);
+  --neon-cyan: #ffd60a;
+  --neon-cyan-glow: rgba(255, 214, 10, 0.4);
+  --accent-primary: #ff375f;
+  --accent-secondary: #ffd60a;
+}
+
+body {
 
   /* Player Colors */
   --player-x: var(--neon-pink);
@@ -39,25 +106,6 @@
   --gradient-gold: linear-gradient(135deg, #ffd60a, #ff9f0a);
   --gradient-success: linear-gradient(135deg, #30d158, #64d2ff);
   --gradient-card: linear-gradient(135deg, rgba(191, 90, 242, 0.1), rgba(100, 210, 255, 0.1));
-
-  /* ---- Glass Effect ---- */
-  --glass-bg: rgba(26, 26, 62, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 20px;
-
-  /* ---- Typography ---- */
-  --font-display: 'Outfit', sans-serif;
-  --font-body: 'Space Grotesk', sans-serif;
-  
-  --text-xs: clamp(0.625rem, 0.5rem + 0.5vw, 0.75rem);
-  --text-sm: clamp(0.75rem, 0.65rem + 0.5vw, 0.875rem);
-  --text-base: clamp(0.875rem, 0.75rem + 0.5vw, 1rem);
-  --text-lg: clamp(1rem, 0.85rem + 0.75vw, 1.25rem);
-  --text-xl: clamp(1.25rem, 1rem + 1vw, 1.5rem);
-  --text-2xl: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
-  --text-3xl: clamp(2rem, 1.5rem + 2vw, 3rem);
-  --text-4xl: clamp(2.5rem, 2rem + 2.5vw, 4rem);
-  --text-hero: clamp(3rem, 2rem + 4vw, 5rem);
 
   /* ---- Spacing ---- */
   --space-xs: 0.25rem;

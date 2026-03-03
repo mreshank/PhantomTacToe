@@ -21,6 +21,7 @@ export class MultiplayerManager {
     this.isHost = false;
     this.connected = false;
     this.opponentName = null;
+    this.opponentFrame = "none";
     this.onMessage = null;
     this.onConnected = null;
     this.onDisconnected = null;
@@ -154,10 +155,11 @@ export class MultiplayerManager {
     });
   }
 
-  sendPlayerInfo(name) {
+  sendPlayerInfo(name, frame = "none") {
     this.send({
       type: "playerInfo",
       name,
+      frame,
       timestamp: Date.now(),
     });
   }

@@ -55,6 +55,7 @@ export async function renderLeaderboard(container) {
                 name: u.name,
                 score: u.wins,
                 streak: u.bestStreak,
+                activeFrame: u.activeFrame || "none",
                 isGlobal: true,
               }));
             } catch (err) {
@@ -93,8 +94,10 @@ export async function renderLeaderboard(container) {
             (entry, i) => `
           <div class="leaderboard-entry ${entry.name === data.profile.name ? "card-glow" : ""}" style="animation: slideInUp 0.4s ease ${i * 30}ms both">
             <div class="leaderboard-rank">${getRankDisplay(i + 1)}</div>
-            <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple)">
-              ${getAvatarIcon(i)}
+            <div class="profile-frame frame-${entry.activeFrame || "none"}">
+              <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple)">
+                ${getAvatarIcon(i)}
+              </div>
             </div>
             <div style="flex: 1; min-width: 0">
               <div style="font-family: var(--font-display); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">

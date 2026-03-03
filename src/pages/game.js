@@ -99,7 +99,9 @@ export function renderGame(container, params) {
         <!-- Player 1 Panel (Left/Top) -->
         <div class="game-sidebar">
           <div class="player-panel player-x ${gameState.currentPlayer === "X" ? "active" : ""}" id="panel-x">
-            <div class="player-avatar" style="background: rgba(255,55,95,0.15); color: var(--neon-pink)">✕</div>
+            <div class="profile-frame frame-${data.profile.activeFrame || "none"}">
+              <div class="player-avatar" style="background: rgba(255,55,95,0.15); color: var(--neon-pink)">✕</div>
+            </div>
             <div class="player-info">
               <div class="player-name" id="name-x">${mode === "solo" ? data.profile.name : "Player X"}</div>
               <div class="player-score">Score: <span id="score-x">0</span></div>
@@ -568,10 +570,19 @@ function setupOnlineGame() {
   } else {
     if (nameX) nameX.textContent = multiplayer.opponentName || "Opponent";
     if (nameO) nameO.textContent = data.profile.name + " (You)";
+
+    // Apply local frame to O
+    const panelO = document.getElementById("panel-o");
+    if (panelO) {
+      const frameEl = panelO.querySelector(".profile-frame");
+      if (frameEl) {
+        frameEl.className = `profile-frame frame-${data.profile.activeFrame || "none"}`;
+      }
+    }
   }
 
   // Send our info
-  multiplayer.sendPlayerInfo(data.profile.name);
+  multiplayer.sendPlayerInfo(data.profile.name, data.profile.activeFrame);
 
   // Disable interaction until both players ready
   interaction.setEnabled(false);
@@ -649,7 +660,7 @@ function setupOnlineGame() {
         break;
 
       case "playerInfo":
-        updateOpponentName(msg.name);
+        updateOpponentName(msg.name, msg.frame);
         break;
 
       case "ready":
@@ -677,15 +688,27 @@ function setupOnlineGame() {
   };
 }
 
-function updateOpponentName(name) {
+function updateOpponentName(name, frame = "none") {
   const nameX = document.getElementById("name-x");
   const nameO = document.getElementById("name-o");
+  const panelX = document.getElementById("panel-x");
+  const panelO = document.getElementById("panel-o");
+
   if (multiplayer.isHost) {
     if (nameO) nameO.textContent = name;
+    if (panelO) {
+      const frameEl = panelO.querySelector(".profile-frame");
+      if (frameEl) frameEl.className = `profile-frame frame-${frame}`;
+    }
   } else {
     if (nameX) nameX.textContent = name;
+    if (panelX) {
+      const frameEl = panelX.querySelector(".profile-frame");
+      if (frameEl) frameEl.className = `profile-frame frame-${frame}`;
+    }
   }
   multiplayer.opponentName = name;
+  multiplayer.opponentFrame = frame;
 }
 
 function showFloatingReaction(reactionKey) {
