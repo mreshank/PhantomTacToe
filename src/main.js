@@ -13,6 +13,13 @@ import "./styles/responsive.css";
 import { router } from "./router.js";
 import { loadData, getSettings } from "./data/storage.js";
 import { audio } from "./utils/audio.js";
+import {
+  iconHome,
+  iconPlay,
+  iconLeaderboard,
+  iconRewards,
+  iconSettings,
+} from "./utils/icons.js";
 
 // Pages
 import { renderHome } from "./pages/home.js";
@@ -77,9 +84,6 @@ function initApp() {
     renderSettings(c);
   });
 
-  // Fix online mode route - redirect to lobby
-  const origOnline = router.routes["/play/online"];
-
   // Initialize audio on first interaction
   document.addEventListener("pointerdown", () => audio.init(), { once: true });
 
@@ -108,23 +112,23 @@ function createNavigation(app) {
         <span class="logo-inf">Infini</span><span>Toe</span>
       </a>
       <a class="nav-item" href="#/" data-route="/">
-        <span class="nav-icon">🏠</span>
+        <span class="nav-icon">${iconHome}</span>
         <span class="nav-label">Home</span>
       </a>
       <a class="nav-item" href="#/play/solo" data-route="/play">
-        <span class="nav-icon">🎮</span>
+        <span class="nav-icon">${iconPlay}</span>
         <span class="nav-label">Play</span>
       </a>
       <a class="nav-item" href="#/leaderboard" data-route="/leaderboard">
-        <span class="nav-icon">🏅</span>
+        <span class="nav-icon">${iconLeaderboard}</span>
         <span class="nav-label">Leaderboard</span>
       </a>
       <a class="nav-item" href="#/rewards" data-route="/rewards">
-        <span class="nav-icon">🏆</span>
+        <span class="nav-icon">${iconRewards}</span>
         <span class="nav-label">Rewards</span>
       </a>
       <a class="nav-item" href="#/settings" data-route="/settings">
-        <span class="nav-icon">⚙️</span>
+        <span class="nav-icon">${iconSettings}</span>
         <span class="nav-label">Settings</span>
       </a>
     </div>
@@ -138,23 +142,23 @@ function createNavigation(app) {
   bottomNav.innerHTML = `
     <div class="nav-items">
       <a class="nav-item active" href="#/" data-route="/">
-        <span class="nav-icon">🏠</span>
+        <span class="nav-icon">${iconHome}</span>
         <span class="nav-label">Home</span>
       </a>
       <a class="nav-item" href="#/play/solo" data-route="/play">
-        <span class="nav-icon">🎮</span>
+        <span class="nav-icon">${iconPlay}</span>
         <span class="nav-label">Play</span>
       </a>
       <a class="nav-item" href="#/leaderboard" data-route="/leaderboard">
-        <span class="nav-icon">🏅</span>
+        <span class="nav-icon">${iconLeaderboard}</span>
         <span class="nav-label">Ranks</span>
       </a>
       <a class="nav-item" href="#/rewards" data-route="/rewards">
-        <span class="nav-icon">🏆</span>
+        <span class="nav-icon">${iconRewards}</span>
         <span class="nav-label">Rewards</span>
       </a>
       <a class="nav-item" href="#/settings" data-route="/settings">
-        <span class="nav-icon">⚙️</span>
+        <span class="nav-icon">${iconSettings}</span>
         <span class="nav-label">Settings</span>
       </a>
     </div>

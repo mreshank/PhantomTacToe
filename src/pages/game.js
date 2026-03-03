@@ -37,6 +37,23 @@ import {
   showLevelUpToast,
 } from "../components/toast.js";
 import { router } from "../router.js";
+import {
+  iconArrowLeft,
+  iconRefresh,
+  iconShare,
+  iconHome,
+  iconTrophy,
+  iconFrown,
+  iconFire,
+  iconRobot,
+  iconSmile,
+  iconLaugh,
+  iconClap,
+  iconClock,
+  iconAlert,
+  iconWifi,
+  iconWifiOff,
+} from "../utils/icons.js";
 
 let gameScene, board, pieceManager, effects, interaction, timer;
 let gameState;
@@ -51,6 +68,12 @@ export function renderGame(container, params) {
 
   isOnlineGame = mode === "online";
 
+  // Guard: if online but not connected, redirect to lobby
+  if (isOnlineGame && !multiplayer.connected) {
+    router.navigate("/play/online/lobby");
+    return;
+  }
+
   gameState = createGameState({
     mode,
     difficulty: settings.difficulty,
@@ -62,12 +85,12 @@ export function renderGame(container, params) {
     <div class="page game-page" id="game-page">
       <!-- Game Header -->
       <div class="game-header">
-        <button class="btn btn-ghost btn-icon" id="btn-back" aria-label="Back to menu">←</button>
+        <button class="btn btn-ghost btn-icon" id="btn-back" aria-label="Back to menu">${iconArrowLeft}</button>
         <div class="turn-indicator" id="turn-indicator">
           <span id="turn-text">X's Turn</span>
         </div>
         <div class="game-header-actions">
-          ${mode === "online" ? '<div class="badge badge-green" id="connection-status">● Connected</div>' : ""}
+          ${mode === "online" ? `<div class="badge badge-green" id="connection-status"><span class="icon-xs">${iconWifi}</span> Connected</div>` : ""}
         </div>
       </div>
 
@@ -76,7 +99,7 @@ export function renderGame(container, params) {
         <!-- Player 1 Panel (Left/Top) -->
         <div class="game-sidebar">
           <div class="player-panel player-x ${gameState.currentPlayer === "X" ? "active" : ""}" id="panel-x">
-            <div class="player-avatar" style="background: rgba(255,55,95,0.15)">✕</div>
+            <div class="player-avatar" style="background: rgba(255,55,95,0.15); color: var(--neon-pink)">✕</div>
             <div class="player-info">
               <div class="player-name" id="name-x">${mode === "solo" ? data.profile.name : "Player X"}</div>
               <div class="player-score">Score: <span id="score-x">0</span></div>
@@ -104,12 +127,12 @@ export function renderGame(container, params) {
                   : ""
               }
             </div>
-            <div class="emoji-bar">
-              <button class="emoji-btn" data-emoji="😊">😊</button>
-              <button class="emoji-btn" data-emoji="🔥">🔥</button>
-              <button class="emoji-btn" data-emoji="😤">😤</button>
-              <button class="emoji-btn" data-emoji="😂">😂</button>
-              <button class="emoji-btn" data-emoji="👏">👏</button>
+            <div class="reaction-bar">
+              <button class="reaction-btn" data-reaction="smile" title="Smile">${iconSmile}</button>
+              <button class="reaction-btn" data-reaction="fire" title="Fire">${iconFire}</button>
+              <button class="reaction-btn" data-reaction="frown" title="Rage">${iconFrown}</button>
+              <button class="reaction-btn" data-reaction="laugh" title="Laugh">${iconLaugh}</button>
+              <button class="reaction-btn" data-reaction="clap" title="Clap">${iconClap}</button>
             </div>
           </div>
 
@@ -129,9 +152,9 @@ export function renderGame(container, params) {
         <!-- Player 2 Panel (Right/Bottom) -->
         <div class="game-sidebar">
           <div class="player-panel player-o" id="panel-o">
-            <div class="player-avatar" style="background: rgba(100,210,255,0.15)">○</div>
+            <div class="player-avatar" style="background: rgba(100,210,255,0.15); color: var(--neon-cyan)">○</div>
             <div class="player-info">
-              <div class="player-name" id="name-o">${mode === "solo" ? "AI Bot 🤖" : "Player O"}</div>
+              <div class="player-name" id="name-o">${mode === "solo" ? `AI Bot <span class="icon-xs">${iconRobot}</span>` : "Player O"}</div>
               <div class="player-score">Score: <span id="score-o">0</span></div>
             </div>
           </div>
@@ -362,7 +385,7 @@ function handleTimeout(mode) {
     const randomMove =
       validMoves[Math.floor(Math.random() * validMoves.length)];
     executeMove(randomMove, mode);
-    showToast("⏰ Time's up! Auto-move", "⏰", 2000);
+    showToast("Time's up! Auto-move", "clock", 2000);
   }
 }
 
@@ -437,19 +460,18 @@ function updateTimerUI(remaining, total) {
 function showResultModal(winner, mode) {
   const data = loadData();
   const isPlayerWin = mode === "solo" ? winner === PLAYERS.X : true;
-  const xp = getXPProgress();
 
   const overlay = document.createElement("div");
   overlay.className = "modal-overlay";
   overlay.innerHTML = `
     <div class="modal animate-pop">
-      <div style="font-size: 3rem; margin-bottom: var(--space-md)">
-        ${isPlayerWin ? "🏆" : "😤"}
+      <div style="margin-bottom: var(--space-md); color: ${isPlayerWin ? "var(--neon-gold)" : "var(--neon-pink)"}">
+        ${isPlayerWin ? iconTrophy : iconFrown}
       </div>
       <h2 style="background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
         ${isPlayerWin ? "Victory!" : "Defeat!"}
       </h2>
-      <p>${winner} wins${mode === "solo" ? (isPlayerWin ? " — nice one! 🔥" : " — try again!") : " this round!"}</p>
+      <p>${winner} wins${mode === "solo" ? (isPlayerWin ? " — nice one!" : " — try again!") : " this round!"}</p>
       
       <div style="margin: var(--space-lg) 0">
         <div class="stats-row">
@@ -465,9 +487,9 @@ function showResultModal(winner, mode) {
       </div>
 
       <div style="display: flex; gap: var(--space-md); flex-direction: column">
-        <button class="btn btn-primary btn-lg btn-block" id="btn-rematch">🔄 Rematch</button>
-        <button class="btn btn-secondary btn-block" id="btn-share-result">📤 Share Result</button>
-        <button class="btn btn-ghost btn-block" id="btn-home">🏠 Home</button>
+        <button class="btn btn-primary btn-lg btn-block" id="btn-rematch">${iconRefresh} Rematch</button>
+        <button class="btn btn-secondary btn-block" id="btn-share-result">${iconShare} Share Result</button>
+        <button class="btn btn-ghost btn-block" id="btn-home">${iconHome} Home</button>
       </div>
     </div>
   `;
@@ -488,7 +510,7 @@ function showResultModal(winner, mode) {
       streak: data.stats.currentStreak,
       level: data.profile.level,
     });
-    showToast("Copied to clipboard! 📋", "✅", 2000);
+    showToast("Copied to clipboard!", "check", 2000);
   });
 
   document.getElementById("btn-home").addEventListener("click", () => {
@@ -525,11 +547,14 @@ function setupOnlineGame() {
 
   if (multiplayer.isHost) {
     if (nameX) nameX.textContent = data.profile.name + " (You)";
-    if (nameO) nameO.textContent = "Opponent";
+    if (nameO) nameO.textContent = multiplayer.opponentName || "Opponent";
   } else {
-    if (nameX) nameX.textContent = "Opponent";
+    if (nameX) nameX.textContent = multiplayer.opponentName || "Opponent";
     if (nameO) nameO.textContent = data.profile.name + " (You)";
   }
+
+  // Send our info
+  multiplayer.sendPlayerInfo(data.profile.name);
 
   multiplayer.onMessage = (msg) => {
     switch (msg.type) {
@@ -538,11 +563,14 @@ function setupOnlineGame() {
           executeMove(msg.cellIndex, "online");
         }
         break;
-      case "emoji":
-        showFloatingEmoji(msg.emoji);
+      case "reaction":
+        showFloatingReaction(msg.reaction);
         break;
       case "rematch":
         startRematch("online");
+        break;
+      case "playerInfo":
+        updateOpponentName(msg.name);
         break;
     }
   };
@@ -550,17 +578,35 @@ function setupOnlineGame() {
   multiplayer.onDisconnected = () => {
     const statusEl = document.getElementById("connection-status");
     if (statusEl) {
-      statusEl.textContent = "● Disconnected";
+      statusEl.innerHTML = `<span class="icon-xs">${iconWifiOff}</span> Disconnected`;
       statusEl.className = "badge badge-pink";
     }
-    showToast("Opponent disconnected", "⚠️", 3000);
+    showToast("Opponent disconnected", "alert", 3000);
   };
 }
 
-function showFloatingEmoji(emoji) {
+function updateOpponentName(name) {
+  const nameX = document.getElementById("name-x");
+  const nameO = document.getElementById("name-o");
+  if (multiplayer.isHost) {
+    if (nameO) nameO.textContent = name;
+  } else {
+    if (nameX) nameX.textContent = name;
+  }
+  multiplayer.opponentName = name;
+}
+
+function showFloatingReaction(reactionKey) {
+  const reactionMap = {
+    smile: iconSmile,
+    fire: iconFire,
+    frown: iconFrown,
+    laugh: iconLaugh,
+    clap: iconClap,
+  };
   const el = document.createElement("div");
-  el.className = "floating-emoji";
-  el.textContent = emoji;
+  el.className = "floating-reaction";
+  el.innerHTML = reactionMap[reactionKey] || iconSmile;
   el.style.left = `${30 + Math.random() * 40}%`;
   el.style.top = "60%";
   document.body.appendChild(el);
@@ -571,16 +617,17 @@ function setupGameEvents(mode, settings) {
   // Back button
   document.getElementById("btn-back")?.addEventListener("click", () => {
     audio.playClick();
+    if (isOnlineGame) multiplayer.disconnect();
     router.navigate("/");
   });
 
-  // Emoji buttons
-  document.querySelectorAll(".emoji-btn").forEach((btn) => {
+  // Reaction buttons (replaced emoji buttons)
+  document.querySelectorAll(".reaction-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const emoji = btn.dataset.emoji;
-      showFloatingEmoji(emoji);
+      const reaction = btn.dataset.reaction;
+      showFloatingReaction(reaction);
       if (isOnlineGame) {
-        multiplayer.sendEmoji(emoji);
+        multiplayer.sendReaction(reaction);
       }
     });
   });
@@ -631,6 +678,19 @@ function addGameStyles() {
     .player-panels {
       display: flex;
       gap: var(--space-md);
+    }
+    .floating-reaction {
+      position: fixed;
+      pointer-events: none;
+      z-index: var(--z-toast);
+      animation: floatUp 1.5s ease forwards;
+      color: var(--neon-cyan);
+      width: 48px;
+      height: 48px;
+    }
+    .floating-reaction .icon {
+      width: 48px;
+      height: 48px;
     }
     @media (max-width: 768px) {
       .game-layout {

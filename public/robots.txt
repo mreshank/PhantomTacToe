@@ -1,3 +1,15 @@
 User-agent: *
 Allow: /
 Sitemap: https://infinitoe.game/sitemap.xml
+
+# LLM crawlers
+User-agent: GPTBot
+Allow: /llms.txt
+Allow: /
+
+User-agent: Claude-Web
+Allow: /llms.txt
+Allow: /
+
+User-agent: Google-Extended
+Allow: /

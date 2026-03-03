@@ -8,14 +8,24 @@ import { shareChallenge } from "../utils/share.js";
 import { audio } from "../utils/audio.js";
 import { showToast } from "../components/toast.js";
 import { router } from "../router.js";
+import {
+  iconArrowLeft,
+  iconGlobe,
+  iconDice,
+  iconShare,
+  iconRocket,
+  iconCheckCircle,
+  iconXCircle,
+  iconAlert,
+} from "../utils/icons.js";
 
 export function renderOnlineLobby(container) {
   container.innerHTML = `
     <div class="page online-lobby-page" id="online-lobby">
-      <button class="btn btn-ghost btn-icon" id="btn-back-lobby" aria-label="Back" style="margin-bottom: var(--space-lg)">←</button>
+      <button class="btn btn-ghost btn-icon" id="btn-back-lobby" aria-label="Back" style="margin-bottom: var(--space-lg)">${iconArrowLeft}</button>
       
-      <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); text-align: center; margin-bottom: var(--space-sm)">
-        🌐 Online Battle
+      <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); text-align: center; margin-bottom: var(--space-sm); display: flex; align-items: center; justify-content: center; gap: var(--space-sm)">
+        <span class="icon-header">${iconGlobe}</span> Online Battle
       </h1>
       <p style="text-align: center; color: var(--text-secondary); margin-bottom: var(--space-2xl)">
         Challenge a friend via peer-to-peer connection
@@ -29,7 +39,7 @@ export function renderOnlineLobby(container) {
             Generate a room code and share it with a friend
           </p>
           <button class="btn btn-primary btn-lg btn-block" id="btn-create-room">
-            🎲 Create Room
+            ${iconDice} Create Room
           </button>
         </div>
 
@@ -46,7 +56,7 @@ export function renderOnlineLobby(container) {
             <span style="color: var(--neon-pink); animation: pulse-glow 1.5s 0.6s infinite">●</span>
           </div>
           <button class="btn btn-secondary btn-block" id="btn-share-room">
-            📤 Share Room Link
+            ${iconShare} Share Room Link
           </button>
         </div>
 
@@ -64,7 +74,7 @@ export function renderOnlineLobby(container) {
             width: 100%; margin-bottom: var(--space-md)"
             maxlength="6" autocomplete="off" spellcheck="false" />
           <button class="btn btn-primary btn-lg btn-block" id="btn-join-room">
-            🚀 Join Room
+            ${iconRocket} Join Room
           </button>
         </div>
       </div>
@@ -82,7 +92,7 @@ export function renderOnlineLobby(container) {
     ?.addEventListener("click", async () => {
       audio.playClick();
       const createBtn = document.getElementById("btn-create-room");
-      createBtn.textContent = "Creating...";
+      createBtn.innerHTML = "Creating...";
       createBtn.disabled = true;
 
       try {
@@ -103,12 +113,12 @@ export function renderOnlineLobby(container) {
 
         // Wait for opponent
         multiplayer.onConnected = () => {
-          showToast("Opponent connected! 🎮", "✅", 3000);
+          showToast("Opponent connected! Starting game...", "check", 3000);
           setTimeout(() => router.navigate("/play/online"), 1000);
         };
       } catch (err) {
-        showToast("Failed to create room", "❌", 3000);
-        createBtn.textContent = "🎲 Create Room";
+        showToast("Failed to create room", "error", 3000);
+        createBtn.innerHTML = `${iconDice} Create Room`;
         createBtn.disabled = false;
       }
     });
@@ -116,7 +126,7 @@ export function renderOnlineLobby(container) {
   document.getElementById("btn-share-room")?.addEventListener("click", () => {
     audio.playClick();
     shareChallenge(multiplayer.roomCode);
-    showToast("Link copied! 📋", "✅", 2000);
+    showToast("Link copied!", "check", 2000);
   });
 
   document
@@ -126,22 +136,22 @@ export function renderOnlineLobby(container) {
       const code = input.value.trim().toUpperCase();
 
       if (code.length !== 6) {
-        showToast("Enter a 6-letter code", "⚠️", 2000);
+        showToast("Enter a 6-letter code", "alert", 2000);
         return;
       }
 
       audio.playClick();
       const joinBtn = document.getElementById("btn-join-room");
-      joinBtn.textContent = "Joining...";
+      joinBtn.innerHTML = "Joining...";
       joinBtn.disabled = true;
 
       try {
         await multiplayer.joinRoom(code);
-        showToast("Connected! Starting game...", "✅", 2000);
+        showToast("Connected! Starting game...", "check", 2000);
         setTimeout(() => router.navigate("/play/online"), 1000);
       } catch (err) {
-        showToast("Room not found or connection failed", "❌", 3000);
-        joinBtn.textContent = "🚀 Join Room";
+        showToast("Room not found or connection failed", "error", 3000);
+        joinBtn.innerHTML = `${iconRocket} Join Room`;
         joinBtn.disabled = false;
       }
     });

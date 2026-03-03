@@ -1,0 +1,51 @@
+# InfiniToe — llms.txt
+
+> InfiniToe is an infinite 3D tic-tac-toe browser game with WebGL graphics,
+> real-time multiplayer, and a GenZ-inspired neon dark design.
+
+## About
+
+InfiniToe reimagines classic tic-tac-toe with an infinite twist: each player
+can only have three pieces on the board at once. When a 4th piece is placed,
+the oldest one fades away automatically, eliminating draws forever and
+creating an endlessly replayable game.
+
+## Features
+
+- 3D WebGL game board with neon glow effects (Three.js)
+- Infinite mode: no draws — oldest piece fades after 3 per player
+- AI opponent with Easy, Medium, and Hard difficulty (minimax algorithm)
+- Local 2P multiplayer on same device
+- Online multiplayer via peer-to-peer WebRTC (PeerJS)
+- Reward system with XP, levels, achievements, and coins
+- Cosmetic shop (board themes)
+- Daily login rewards with streak bonuses
+- Fully offline PWA — works without internet
+- Sound effects, haptic feedback, and smooth animations
+- Mobile-first responsive design
+
+## Technology
+
+- Frontend: Vanilla JavaScript (ES modules), Vite build tool
+- 3D: Three.js for WebGL rendering
+- Multiplayer: PeerJS (WebRTC peer-to-peer)
+- Audio: Web Audio API
+- PWA: Service Worker with offline caching
+- No server backend required — the game runs entirely in the browser
+
+## How to Play
+
+1. Choose a game mode: Solo (vs AI), Local Duel (2P same device), or Online Battle
+2. Take turns placing X or O on the 3D board
+3. Each player's pieces are limited to 3 on the board
+4. Placing a 4th piece removes the oldest — making every game winnable
+5. Get three in a row to win
+
+## Links
+
+- Homepage: https://infinitoe.game
+- Play Now: https://infinitoe.game/#/play/solo
+
+## Contact
+
+- Developer site: https://infinitoe.game

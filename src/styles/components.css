@@ -883,3 +883,191 @@
 .tab:hover:not(.active) {
     color: var(--text-primary);
 }
+
+/* ---- SVG Icon Styles ---- */
+.icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: -0.125em;
+    flex-shrink: 0;
+}
+
+.icon-inline {
+    display: inline-flex;
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: -0.2em;
+}
+
+.icon-inline .icon {
+    width: 100%;
+    height: 100%;
+}
+
+.icon-xs {
+    display: inline-flex;
+    width: 0.85em;
+    height: 0.85em;
+    vertical-align: -0.1em;
+}
+
+.icon-xs .icon {
+    width: 100%;
+    height: 100%;
+}
+
+.icon-header {
+    display: inline-flex;
+    width: 1.1em;
+    height: 1.1em;
+}
+
+.icon-header .icon {
+    width: 100%;
+    height: 100%;
+}
+
+.icon-rank {
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+}
+
+.icon-rank .icon {
+    width: 100%;
+    height: 100%;
+}
+
+/* Nav icons */
+.nav-icon .icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Mode card icons */
+.mode-icon .icon {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.mode-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-md);
+    color: currentColor;
+}
+
+/* Avatar icons within buttons */
+.avatar-icon {
+    width: 100%;
+    height: 100%;
+}
+
+/* Streak banner icon */
+.streak-fire .icon {
+    width: 2rem;
+    height: 2rem;
+}
+
+.streak-fire {
+    display: flex;
+    color: var(--neon-gold);
+}
+
+/* Reaction buttons */
+.reaction-bar {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.reaction-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: none;
+    color: var(--text-secondary);
+    padding: 6px;
+}
+
+.reaction-btn:hover {
+    transform: scale(1.2);
+    background: var(--bg-card-hover);
+    color: var(--neon-cyan);
+}
+
+.reaction-btn:active {
+    transform: scale(0.9);
+}
+
+.reaction-btn .icon {
+    width: 100%;
+    height: 100%;
+}
+
+/* Achievement icon */
+.achievement-icon .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* Player avatar icon */
+.player-avatar .icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Toast icon */
+.toast-icon .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* Modal result icon */
+.modal .icon {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Button icons */
+.btn .icon {
+    width: 1.1em;
+    height: 1.1em;
+}
+
+/* Shop preview */
+.shop-preview .icon {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* How it works icons */
+.how-it-works .icon {
+    width: 1em;
+    height: 1em;
+}
+
+/* Connection status icon */
+.badge .icon-xs .icon,
+.badge .icon {
+    width: 0.8em;
+    height: 0.8em;
+}
+
+/* Leaderboard avatar */
+.leaderboard-entry .player-avatar .icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Home avatar */
+.home-avatar .icon {
+    width: 32px;
+    height: 32px;
+}

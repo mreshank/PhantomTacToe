@@ -12,11 +12,41 @@ import { router } from "../router.js";
 import { audio } from "../utils/audio.js";
 import { vibrateClick } from "../utils/haptics.js";
 import { showToast, showCoinsToast, showXPToast } from "../components/toast.js";
+import {
+  iconRobot,
+  iconGamepad,
+  iconGlobe,
+  iconCoin,
+  iconGift,
+  iconFire,
+  iconInfinity,
+  iconSparkle,
+  iconMuscle,
+  avatarIcons,
+} from "../utils/icons.js";
 
 export function renderHome(container) {
   const data = loadData();
   const xp = getXPProgress();
   const canClaim = canClaimDailyReward();
+  const avatarIdx = avatarIcons.findIndex((_, i) => {
+    const avatars = [
+      "😎",
+      "🤠",
+      "🥷",
+      "👽",
+      "🤖",
+      "🎃",
+      "🦊",
+      "🐱",
+      "🌟",
+      "💀",
+      "🔥",
+      "🧠",
+    ];
+    return avatars[i] === data.profile.avatar;
+  });
+  const avatarSvg = avatarIdx >= 0 ? avatarIcons[avatarIdx] : avatarIcons[0];
 
   container.innerHTML = `
     <div class="page home-page" id="home-page">
@@ -25,13 +55,13 @@ export function renderHome(container) {
         <h1 class="hero-title">
           <span class="logo-inf">Infini</span><span class="logo-toe">Toe</span>
         </h1>
-        <p class="hero-subtitle">Infinite 3D Tic-Tac-Toe ♾️</p>
+        <p class="hero-subtitle">Infinite 3D Tic-Tac-Toe ${iconInfinity}</p>
         <p class="hero-tagline">No draws. No limits. Just vibes.</p>
       </div>
 
       <!-- Player Stats Bar -->
       <div class="home-stats-bar card">
-        <div class="home-avatar">${data.profile.avatar}</div>
+        <div class="home-avatar">${avatarSvg}</div>
         <div class="home-player-info">
           <div class="home-player-name">${data.profile.name}</div>
           <div class="home-level-row">
@@ -43,7 +73,7 @@ export function renderHome(container) {
           </div>
         </div>
         <div class="home-coins">
-          <span>🪙</span>
+          <span class="icon-inline">${iconCoin}</span>
           <span>${data.profile.coins}</span>
         </div>
       </div>
@@ -53,10 +83,10 @@ export function renderHome(container) {
         data.stats.currentStreak > 0
           ? `
       <div class="streak-banner animate-slide-up">
-        <span class="streak-fire">🔥</span>
+        <span class="streak-fire">${iconFire}</span>
         <div class="streak-info">
           <div class="streak-count">${data.stats.currentStreak} Win Streak!</div>
-          <div class="streak-label">Keep it going 💪</div>
+          <div class="streak-label">Keep it going ${iconMuscle}</div>
         </div>
       </div>
       `
@@ -68,7 +98,7 @@ export function renderHome(container) {
         canClaim
           ? `
       <button class="daily-claim-btn btn btn-lg btn-block" id="claim-daily-btn" style="background: var(--gradient-gold); color: #000; margin-bottom: var(--space-lg)">
-        🎁 Claim Daily Reward
+        ${iconGift} Claim Daily Reward
       </button>
       `
           : ""
@@ -80,17 +110,17 @@ export function renderHome(container) {
       </div>
       <div class="mode-cards">
         <button class="mode-card" data-mode="solo" id="btn-solo">
-          <span class="mode-icon">🤖</span>
+          <span class="mode-icon">${iconRobot}</span>
           <div class="mode-title">Solo Play</div>
           <div class="mode-desc">Challenge the AI</div>
         </button>
         <button class="mode-card" data-mode="local" id="btn-local">
-          <span class="mode-icon">🎮</span>
+          <span class="mode-icon">${iconGamepad}</span>
           <div class="mode-title">Local Duel</div>
           <div class="mode-desc">Same device, 2 players</div>
         </button>
         <button class="mode-card" data-mode="online" id="btn-online">
-          <span class="mode-icon">🌐</span>
+          <span class="mode-icon">${iconGlobe}</span>
           <div class="mode-title">Online Battle</div>
           <div class="mode-desc">Play with friends</div>
         </button>
@@ -121,10 +151,10 @@ export function renderHome(container) {
 
       <!-- How It Works -->
       <div class="how-it-works card" style="margin-top: var(--space-2xl)">
-        <h3 style="font-family: var(--font-display); margin-bottom: var(--space-md)">♾️ How Infinite Mode Works</h3>
+        <h3 style="font-family: var(--font-display); margin-bottom: var(--space-md)">${iconInfinity} How Infinite Mode Works</h3>
         <p style="color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.8">
           Each player can have <strong style="color: var(--neon-gold)">max 3 pieces</strong> on the board at once.
-          When you place your 4th piece, your oldest one fades away ✨<br>
+          When you place your 4th piece, your oldest one fades away ${iconSparkle}<br>
           This means <strong style="color: var(--neon-pink)">no more draws</strong> — the game continues until someone wins!
         </p>
       </div>
@@ -155,7 +185,7 @@ export function renderHome(container) {
   onlineBtn?.addEventListener("click", () => {
     audio.playClick();
     vibrateClick();
-    router.navigate("/play/online");
+    router.navigate("/play/online/lobby");
   });
 
   claimBtn?.addEventListener("click", () => {
@@ -164,7 +194,7 @@ export function renderHome(container) {
       audio.playCoins();
       showCoinsToast(reward.coins);
       setTimeout(() => showXPToast(reward.xp), 500);
-      showToast(`🔥 Day ${reward.streak} streak!`, "🎁", 3000);
+      showToast(`Day ${reward.streak} streak!`, "fire", 3000);
       claimBtn.remove();
     }
   });
@@ -190,6 +220,10 @@ function addHomeStyles() {
       font-size: var(--text-xl);
       color: var(--text-secondary);
       margin-bottom: var(--space-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
     }
     .hero-tagline {
       font-size: var(--text-sm);
@@ -213,6 +247,7 @@ function addHomeStyles() {
       justify-content: center;
       font-size: 1.5rem;
       flex-shrink: 0;
+      color: var(--neon-purple);
     }
     .home-player-info {
       flex: 1;
@@ -250,6 +285,11 @@ function addHomeStyles() {
     }
     .how-it-works {
       border-color: rgba(255, 214, 10, 0.15);
+    }
+    .how-it-works h3 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
     }
   `;
   document.head.appendChild(style);

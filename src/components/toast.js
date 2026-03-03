@@ -2,7 +2,34 @@
    InfiniToe - Toast Notification System
    ======================================== */
 
+import {
+  iconSparkle,
+  iconTrophy,
+  iconBolt,
+  iconCoin,
+  iconCheck,
+  iconCheckCircle,
+  iconAlert,
+  iconFire,
+  iconClock,
+  iconGift,
+} from "../utils/icons.js";
+
 let container = null;
+
+// Map short icon names to SVG icons
+const iconMap = {
+  sparkle: iconSparkle,
+  trophy: iconTrophy,
+  bolt: iconBolt,
+  coin: iconCoin,
+  check: iconCheckCircle,
+  alert: iconAlert,
+  fire: iconFire,
+  clock: iconClock,
+  gift: iconGift,
+  error: iconAlert,
+};
 
 function ensureContainer() {
   if (!container) {
@@ -14,13 +41,15 @@ function ensureContainer() {
   return container;
 }
 
-export function showToast(message, icon = "✨", duration = 3000) {
+export function showToast(message, icon = "sparkle", duration = 3000) {
   const c = ensureContainer();
+
+  const iconHtml = iconMap[icon] || iconSparkle;
 
   const toast = document.createElement("div");
   toast.className = "toast";
   toast.innerHTML = `
-    <span class="toast-icon">${icon}</span>
+    <span class="toast-icon">${iconHtml}</span>
     <span class="toast-message">${message}</span>
   `;
 
@@ -36,20 +65,20 @@ export function showToast(message, icon = "✨", duration = 3000) {
 
 export function showAchievementToast(achievement) {
   showToast(
-    `<strong>Achievement Unlocked!</strong><br>${achievement.icon} ${achievement.name}`,
-    "🏆",
+    `<strong>Achievement Unlocked!</strong><br>${achievement.name}`,
+    "trophy",
     4000,
   );
 }
 
 export function showXPToast(amount) {
-  showToast(`+${amount} XP`, "⚡", 2000);
+  showToast(`+${amount} XP`, "bolt", 2000);
 }
 
 export function showCoinsToast(amount) {
-  showToast(`+${amount} coins`, "🪙", 2000);
+  showToast(`+${amount} coins`, "coin", 2000);
 }
 
 export function showLevelUpToast(level) {
-  showToast(`Level Up! You're now Level ${level}`, "🎉", 4000);
+  showToast(`Level Up! You're now Level ${level}`, "sparkle", 4000);
 }

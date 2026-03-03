@@ -1,0 +1,17 @@
+/* TEAM */
+  Made by: InfiniToe Team
+  Site: https://infinitoe.game
+
+/* TECHNOLOGY */
+  Platform: Web (Browser)
+  Build: Vite
+  3D Engine: Three.js
+  Multiplayer: PeerJS (WebRTC)
+  Language: JavaScript (ES Modules)
+  Audio: Web Audio API
+  Standards: HTML5, CSS3, ES2022+
+
+/* THANKS */
+  Three.js — https://threejs.org
+  PeerJS — https://peerjs.com
+  Google Fonts — Inter & Space Grotesk

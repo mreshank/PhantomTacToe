@@ -5,6 +5,14 @@
 import Peer from "peerjs";
 import { generateRoomCode } from "../utils/share.js";
 
+const PEERJS_CONFIG = {
+  debug: 0,
+  // Use env or defaults
+  host: import.meta.env?.VITE_PEERJS_HOST || "0.peerjs.com",
+  port: parseInt(import.meta.env?.VITE_PEERJS_PORT || "443"),
+  secure: true,
+};
+
 export class MultiplayerManager {
   constructor() {
     this.peer = null;
@@ -12,12 +20,14 @@ export class MultiplayerManager {
     this.roomCode = null;
     this.isHost = false;
     this.connected = false;
+    this.opponentName = null;
     this.onMessage = null;
     this.onConnected = null;
     this.onDisconnected = null;
     this.onError = null;
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 3;
+    this._connectionTimeout = null;
   }
 
   async createRoom() {
@@ -27,9 +37,7 @@ export class MultiplayerManager {
     return new Promise((resolve, reject) => {
       const peerId = `infinitoe-${this.roomCode}`;
 
-      this.peer = new Peer(peerId, {
-        debug: 0,
-      });
+      this.peer = new Peer(peerId, PEERJS_CONFIG);
 
       this.peer.on("open", (id) => {
         console.log("Room created:", this.roomCode);
@@ -53,6 +61,14 @@ export class MultiplayerManager {
           reject(err);
         }
       });
+
+      // Timeout for peer open
+      this._connectionTimeout = setTimeout(() => {
+        if (!this.peer?.open) {
+          reject(new Error("Connection timeout"));
+          this.disconnect();
+        }
+      }, 15000);
     });
   }
 
@@ -61,9 +77,7 @@ export class MultiplayerManager {
     this.isHost = false;
 
     return new Promise((resolve, reject) => {
-      this.peer = new Peer(undefined, {
-        debug: 0,
-      });
+      this.peer = new Peer(undefined, PEERJS_CONFIG);
 
       this.peer.on("open", () => {
         const peerId = `infinitoe-${code}`;
@@ -74,6 +88,14 @@ export class MultiplayerManager {
         conn.on("open", () => {
           resolve(code);
         });
+
+        // Timeout for connection
+        this._connectionTimeout = setTimeout(() => {
+          if (!this.connected) {
+            reject(new Error("Connection timeout - room not found"));
+            this.disconnect();
+          }
+        }, 15000);
       });
 
       this.peer.on("error", (err) => {
@@ -88,6 +110,7 @@ export class MultiplayerManager {
     conn.on("open", () => {
       this.connected = true;
       this.reconnectAttempts = 0;
+      clearTimeout(this._connectionTimeout);
       console.log("Connected to peer");
       if (this.onConnected) this.onConnected();
     });
@@ -123,10 +146,18 @@ export class MultiplayerManager {
     });
   }
 
-  sendEmoji(emoji) {
+  sendReaction(reaction) {
     this.send({
-      type: "emoji",
-      emoji,
+      type: "reaction",
+      reaction,
+      timestamp: Date.now(),
+    });
+  }
+
+  sendPlayerInfo(name) {
+    this.send({
+      type: "playerInfo",
+      name,
       timestamp: Date.now(),
     });
   }
@@ -147,6 +178,7 @@ export class MultiplayerManager {
   }
 
   disconnect() {
+    clearTimeout(this._connectionTimeout);
     if (this.connection) {
       this.connection.close();
       this.connection = null;
@@ -157,10 +189,12 @@ export class MultiplayerManager {
     }
     this.connected = false;
     this.roomCode = null;
+    this.opponentName = null;
   }
 
   getShareURL() {
-    return `${window.location.origin}${window.location.pathname}#/join/${this.roomCode}`;
+    const base = import.meta.env?.VITE_SITE_URL || window.location.origin;
+    return `${base}${window.location.pathname}#/join/${this.roomCode}`;
   }
 }
 

@@ -11,6 +11,22 @@ import {
 import { getAchievementStatus } from "../rewards/achievements.js";
 import { audio } from "../utils/audio.js";
 import { showToast, showCoinsToast, showXPToast } from "../components/toast.js";
+import {
+  iconRewards,
+  iconCoin,
+  iconGift,
+  iconFire,
+  iconCheckCircle,
+  iconSparkle,
+  iconShoppingBag,
+  iconCheck,
+  iconDiamond,
+  iconStar,
+  iconTarget,
+  iconHeart,
+  iconBolt,
+  avatarIcons,
+} from "../utils/icons.js";
 
 export function renderRewards(container) {
   const data = loadData();
@@ -20,16 +36,43 @@ export function renderRewards(container) {
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
+  // Map old emoji avatars to SVG
+  const avatarIdx = [
+    "😎",
+    "🤠",
+    "🥷",
+    "👽",
+    "🤖",
+    "🎃",
+    "🦊",
+    "🐱",
+    "🌟",
+    "💀",
+    "🔥",
+    "🧠",
+  ].indexOf(data.profile.avatar);
+  const avatarSvg = avatarIdx >= 0 ? avatarIcons[avatarIdx] : avatarIcons[0];
+
+  // Shop theme icons
+  const shopIcons = {
+    neon: `<span style="color:var(--neon-purple)">${iconDiamond}</span>`,
+    retro: `<span style="color:var(--neon-cyan)">${iconTarget}</span>`,
+    galaxy: `<span style="color:var(--neon-pink)">${iconStar}</span>`,
+    minimal: `<span style="color:var(--text-secondary)">${iconTarget}</span>`,
+    fire: `<span style="color:var(--neon-gold)">${iconFire}</span>`,
+    crystal: `<span style="color:var(--neon-cyan)">${iconDiamond}</span>`,
+  };
+
   container.innerHTML = `
     <div class="page rewards-page">
-      <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); margin-bottom: var(--space-xl)">
-        🏆 Rewards
+      <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); margin-bottom: var(--space-xl); display: flex; align-items: center; gap: var(--space-sm)">
+        <span class="icon-header" style="color:var(--neon-gold)">${iconRewards}</span> Rewards
       </h1>
 
       <!-- Level Progress -->
       <div class="card" style="margin-bottom: var(--space-xl)">
         <div style="display: flex; align-items: center; gap: var(--space-lg); margin-bottom: var(--space-md)">
-          <div style="font-size: 2.5rem">${data.profile.avatar}</div>
+          <div style="width:48px;height:48px;color:var(--neon-purple)">${avatarSvg}</div>
           <div style="flex: 1">
             <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--text-xl)">
               Level ${xp.level}
@@ -39,7 +82,7 @@ export function renderRewards(container) {
             </div>
           </div>
           <div class="home-coins" style="display: flex; align-items: center; gap: 4px; font-family: var(--font-display); font-weight: 700; color: var(--neon-gold); font-size: var(--text-xl)">
-            <span>🪙</span>
+            <span class="icon-inline">${iconCoin}</span>
             <span>${data.profile.coins}</span>
           </div>
         </div>
@@ -52,18 +95,18 @@ export function renderRewards(container) {
       <div class="section-header">
         <h2 class="section-title">Daily Reward</h2>
         <span class="badge ${canClaim ? "badge-gold" : "badge-green"}">
-          ${canClaim ? "✨ Available" : "✅ Claimed"}
+          ${canClaim ? `${iconSparkle} Available` : `${iconCheck} Claimed`}
         </span>
       </div>
       <div class="card" style="margin-bottom: var(--space-xl); text-align: center;">
         <p style="color: var(--text-secondary); font-size: var(--text-sm); margin-bottom: var(--space-md)">
-          🔥 Current daily streak: <strong style="color: var(--neon-gold)">${data.dailyReward.streak} days</strong>
+          <span class="icon-inline" style="color:var(--neon-gold)">${iconFire}</span> Current daily streak: <strong style="color: var(--neon-gold)">${data.dailyReward.streak} days</strong>
         </p>
         ${
           canClaim
             ? `
           <button class="btn btn-lg btn-block" id="claim-daily" style="background: var(--gradient-gold); color: #000">
-            🎁 Claim Today's Reward
+            ${iconGift} Claim Today's Reward
           </button>
         `
             : `
@@ -88,8 +131,8 @@ export function renderRewards(container) {
               <div class="achievement-desc">${a.desc}</div>
               ${
                 a.unlocked
-                  ? `<span class="badge badge-green" style="margin-top: 4px">✅ Unlocked</span>`
-                  : `<span class="badge" style="margin-top: 4px">🪙 ${a.reward.coins} + ⚡${a.reward.xp} XP</span>`
+                  ? `<span class="badge badge-green" style="margin-top: 4px">${iconCheck} Unlocked</span>`
+                  : `<span class="badge" style="margin-top: 4px"><span class="icon-xs">${iconCoin}</span> ${a.reward.coins} + <span class="icon-xs">${iconBolt}</span>${a.reward.xp} XP</span>`
               }
             </div>
           </div>
@@ -100,39 +143,30 @@ export function renderRewards(container) {
 
       <!-- Cosmetic Shop Preview -->
       <div class="section-header">
-        <h2 class="section-title">Shop</h2>
+        <h2 class="section-title">${iconShoppingBag} Shop</h2>
       </div>
       <div class="shop-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--space-md)">
-        <div class="shop-item ${data.cosmetics.equippedBoard === "neon" ? "equipped" : "owned"}">
-          <div class="shop-preview">💜</div>
-          <div class="shop-name">Neon</div>
-          <div class="shop-price">${data.cosmetics.equippedBoard === "neon" ? "✅ Equipped" : "✅ Owned"}</div>
-        </div>
-        <div class="shop-item ${data.cosmetics.owned.includes("retro") ? "owned" : ""}">
-          <div class="shop-preview">🕹️</div>
-          <div class="shop-name">Retro</div>
-          <div class="shop-price">${data.cosmetics.owned.includes("retro") ? "✅ Owned" : "🪙 200"}</div>
-        </div>
-        <div class="shop-item ${data.cosmetics.owned.includes("galaxy") ? "owned" : ""}">
-          <div class="shop-preview">🌌</div>
-          <div class="shop-name">Galaxy</div>
-          <div class="shop-price">${data.cosmetics.owned.includes("galaxy") ? "✅ Owned" : "🪙 500"}</div>
-        </div>
-        <div class="shop-item ${data.cosmetics.owned.includes("minimal") ? "owned" : ""}">
-          <div class="shop-preview">⬜</div>
-          <div class="shop-name">Minimal</div>
-          <div class="shop-price">${data.cosmetics.owned.includes("minimal") ? "✅ Owned" : "🪙 150"}</div>
-        </div>
-        <div class="shop-item ${data.cosmetics.owned.includes("fire") ? "owned" : ""}">
-          <div class="shop-preview">🔥</div>
-          <div class="shop-name">Fire</div>
-          <div class="shop-price">${data.cosmetics.owned.includes("fire") ? "✅ Owned" : "🪙 300"}</div>
-        </div>
-        <div class="shop-item ${data.cosmetics.owned.includes("crystal") ? "owned" : ""}">
-          <div class="shop-preview">💎</div>
-          <div class="shop-name">Crystal</div>
-          <div class="shop-price">${data.cosmetics.owned.includes("crystal") ? "✅ Owned" : "🪙 400"}</div>
-        </div>
+        ${["neon", "retro", "galaxy", "minimal", "fire", "crystal"]
+          .map((theme) => {
+            const isEquipped = data.cosmetics.equippedBoard === theme;
+            const isOwned =
+              data.cosmetics.owned.includes(theme) || theme === "neon";
+            const prices = {
+              neon: 0,
+              retro: 200,
+              galaxy: 500,
+              minimal: 150,
+              fire: 300,
+              crystal: 400,
+            };
+            return `
+          <div class="shop-item ${isEquipped ? "equipped" : isOwned ? "owned" : ""}">
+            <div class="shop-preview">${shopIcons[theme]}</div>
+            <div class="shop-name">${theme.charAt(0).toUpperCase() + theme.slice(1)}</div>
+            <div class="shop-price">${isEquipped ? `${iconCheck} Equipped` : isOwned ? `${iconCheck} Owned` : `<span class="icon-xs">${iconCoin}</span> ${prices[theme]}`}</div>
+          </div>`;
+          })
+          .join("")}
       </div>
     </div>
   `;
@@ -144,7 +178,7 @@ export function renderRewards(container) {
       audio.playCoins();
       showCoinsToast(reward.coins);
       setTimeout(() => showXPToast(reward.xp), 500);
-      showToast(`🔥 Day ${reward.streak} streak!`, "🎁", 3000);
+      showToast(`Day ${reward.streak} streak!`, "fire", 3000);
       // Re-render
       renderRewards(container);
     }
