@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Home Page
+   Phantom Tac Toe - Home Page
    ======================================== */
 
 import {
@@ -19,7 +19,7 @@ import {
   iconCoin,
   iconGift,
   iconFire,
-  iconInfinity,
+  iconPhantomty,
   iconSparkle,
   iconMuscle,
   avatarIcons,
@@ -40,9 +40,9 @@ export function renderHome(container) {
       <!-- Hero Section -->
       <div class="hero-section">
         <h1 class="hero-title">
-          <span class="logo-inf">Infini</span><span class="logo-toe">Toe</span>
+          <span class="logo-inf">Phantom</span><span class="logo-toe">Toe</span>
         </h1>
-        <p class="hero-subtitle">Infinite 3D Tic-Tac-Toe ${iconInfinity}</p>
+        <p class="hero-subtitle">Infinite 3D Tic-Tac-Toe ${iconPhantomty}</p>
         <p class="hero-tagline">No draws. No limits. Just vibes.</p>
       </div>
 
@@ -138,7 +138,7 @@ export function renderHome(container) {
 
       <!-- How It Works -->
       <div class="how-it-works card" style="margin-top: var(--space-2xl)">
-        <h3 style="font-family: var(--font-display); margin-bottom: var(--space-md)">${iconInfinity} How Infinite Mode Works</h3>
+        <h3 style="font-family: var(--font-display); margin-bottom: var(--space-md)">${iconPhantomty} How Infinite Mode Works</h3>
         <p style="color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.8">
           Each player can have <strong style="color: var(--neon-gold)">max 3 pieces</strong> on the board at once.
           When you place your 4th piece, your oldest one fades away ${iconSparkle}<br>

@@ -1,8 +1,8 @@
 /* ========================================
-   InfiniToe - Data Storage (localStorage)
+   Phantom Tac Toe - Data Storage (localStorage)
    ======================================== */
 
-const STORAGE_KEY = "infinitoe_data";
+const STORAGE_KEY = "phantomtactoe_data";
 const STORAGE_VERSION = 1;
 
 const DEFAULT_DATA = {

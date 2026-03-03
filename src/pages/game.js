@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Game Page
+   Phantom Tac Toe - Game Page
    Main gameplay screen
    ======================================== */
 

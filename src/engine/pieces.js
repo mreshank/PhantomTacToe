@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - 3D Game Pieces (X & O)
+   Phantom Tac Toe - 3D Game Pieces (X & O)
    ======================================== */
 
 import * as THREE from "three";

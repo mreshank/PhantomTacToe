@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Settings Page
+   Phantom Tac Toe - Settings Page
    ======================================== */
 
 import { loadData, updateSettings, updateProfile } from "../data/storage.js";
@@ -191,7 +191,7 @@ export function renderSettings(container) {
       </div>
 
       <div style="text-align: center; padding: var(--space-2xl) 0; color: var(--text-tertiary); font-size: var(--text-xs); display: flex; align-items: center; justify-content: center; gap: 4px">
-        InfiniToe v1.0.0 • Made with <span class="icon-xs" style="color:var(--neon-pink)">${iconHeart}</span>
+        Phantom Tac Toe v1.0.0 • Made with <span class="icon-xs" style="color:var(--neon-pink)">${iconHeart}</span>
       </div>
     </div>
   `;
@@ -284,7 +284,7 @@ export function renderSettings(container) {
 
   document.getElementById("btn-reset")?.addEventListener("click", () => {
     if (confirm("Are you sure? This cannot be undone!")) {
-      localStorage.removeItem("infinitoe_data");
+      localStorage.removeItem("phantomtactoe_data");
       showToast("All data reset!", "check", 2000);
       renderSettings(container);
     }

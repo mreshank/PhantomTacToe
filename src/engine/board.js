@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - 3D Game Board
+   Phantom Tac Toe - 3D Game Board
    Neon grid with cell interaction zones
    ======================================== */
 

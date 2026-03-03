@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Audio Manager
+   Phantom Tac Toe - Audio Manager
    Web Audio API sound effects
    ======================================== */
 

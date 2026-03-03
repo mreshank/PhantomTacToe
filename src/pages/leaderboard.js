@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Leaderboard Page
+   Phantom Tac Toe - Leaderboard Page
    ======================================== */
 
 import { loadData } from "../data/storage.js";

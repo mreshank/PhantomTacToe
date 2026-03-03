@@ -1,5 +1,5 @@
 /* ===================================
-   InfiniToe - Base Styles
+   Phantom Tac Toe - Base Styles
    =================================== */
 
 *,
@@ -12,6 +12,7 @@
 
 html {
     scroll-behavior: smooth;
+    text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

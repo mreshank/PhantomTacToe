@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Input / Interaction Handler
+   Phantom Tac Toe - Input / Interaction Handler
    Raycasting for mouse/touch -> board cell
    ======================================== */
 

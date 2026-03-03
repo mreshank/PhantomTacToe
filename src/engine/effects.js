@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Visual Effects
+   Phantom Tac Toe - Visual Effects
    Particles, confetti, sparkles
    ======================================== */
 

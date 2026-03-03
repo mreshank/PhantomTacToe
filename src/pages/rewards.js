@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Rewards Page
+   Phantom Tac Toe - Rewards Page
    ======================================== */
 
 import {

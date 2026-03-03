@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Multiplayer (PeerJS WebRTC)
+   Phantom Tac Toe - Multiplayer (PeerJS WebRTC)
    ======================================== */
 
 import Peer from "peerjs";
@@ -35,7 +35,7 @@ export class MultiplayerManager {
     this.isHost = true;
 
     return new Promise((resolve, reject) => {
-      const peerId = `infinitoe-${this.roomCode}`;
+      const peerId = `phantomtactoe-${this.roomCode}`;
 
       this.peer = new Peer(peerId, PEERJS_CONFIG);
 
@@ -80,7 +80,7 @@ export class MultiplayerManager {
       this.peer = new Peer(undefined, PEERJS_CONFIG);
 
       this.peer.on("open", () => {
-        const peerId = `infinitoe-${code}`;
+        const peerId = `phantomtactoe-${code}`;
         const conn = this.peer.connect(peerId, { reliable: true });
         this.connection = conn;
         this.setupConnection(conn);

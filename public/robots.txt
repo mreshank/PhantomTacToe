@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Sitemap: https://infinitoe.game/sitemap.xml
+Sitemap: https://phantomtactoe.game/sitemap.xml
 
 # LLM crawlers
 User-agent: GPTBot

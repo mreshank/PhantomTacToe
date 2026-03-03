@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Toast Notification System
+   Phantom Tac Toe - Toast Notification System
    ======================================== */
 
 import {

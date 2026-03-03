@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Haptic Feedback
+   Phantom Tac Toe - Haptic Feedback
    ======================================== */
 
 export function vibrate(pattern = 10) {

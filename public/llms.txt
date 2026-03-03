@@ -1,11 +1,11 @@
-# InfiniToe — llms.txt
+# Phantom Tac Toe — llms.txt
 
-> InfiniToe is an infinite 3D tic-tac-toe browser game with WebGL graphics,
+> Phantom Tac Toe is an infinite 3D tic-tac-toe browser game with WebGL graphics,
 > real-time multiplayer, and a GenZ-inspired neon dark design.
 
 ## About
 
-InfiniToe reimagines classic tic-tac-toe with an infinite twist: each player
+Phantom Tac Toe reimagines classic tic-tac-toe with an infinite twist: each player
 can only have three pieces on the board at once. When a 4th piece is placed,
 the oldest one fades away automatically, eliminating draws forever and
 creating an endlessly replayable game.
@@ -43,9 +43,9 @@ creating an endlessly replayable game.
 
 ## Links
 
-- Homepage: https://infinitoe.game
-- Play Now: https://infinitoe.game/#/play/solo
+- Homepage: https://phantomtactoe.game
+- Play Now: https://phantomtactoe.game/#/play/solo
 
 ## Contact
 
-- Developer site: https://infinitoe.game
+- Developer site: https://phantomtactoe.game

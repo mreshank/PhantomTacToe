@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Main Entry Point
+   Phantom Tac Toe - Main Entry Point
    ======================================== */
 
 // Styles
@@ -124,7 +124,7 @@ function createNavigation(app) {
   desktopNav.innerHTML = `
     <div class="nav-items">
       <a class="nav-brand" href="#/">
-        <span class="logo-inf">Infini</span><span>Toe</span>
+        <span class="logo-inf">Phantom</span><span>Toe</span>
       </a>
       <a class="nav-item" href="#/" data-route="/">
         <span class="nav-icon">${iconHome}</span>

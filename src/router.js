@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Router (Hash-based SPA)
+   Phantom Tac Toe - Router (Hash-based SPA)
    ======================================== */
 
 export class Router {

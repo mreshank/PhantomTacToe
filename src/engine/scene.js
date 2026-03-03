@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Three.js Scene Setup
+   Phantom Tac Toe - Three.js Scene Setup
    ======================================== */
 
 import * as THREE from "three";

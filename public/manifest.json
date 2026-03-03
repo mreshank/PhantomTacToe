@@ -1,6 +1,6 @@
 {
-    "name": "InfiniToe — 3D Infinite Tic-Tac-Toe",
-    "short_name": "InfiniToe",
+    "name": "Phantom Tac Toe — 3D Infinite Tic-Tac-Toe",
+    "short_name": "Phantom Tac Toe",
     "description": "Play infinite 3D Tic-Tac-Toe with neon graphics, AI, and online multiplayer!",
     "start_url": "/",
     "display": "standalone",

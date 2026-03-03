@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Game State Machine
+   Phantom Tac Toe - Game State Machine
    Infinite Tic-Tac-Toe with sliding window
    ======================================== */
 

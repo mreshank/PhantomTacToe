@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Share Utility
+   Phantom Tac Toe - Share Utility
    Web Share API + clipboard fallback
    ======================================== */
 
@@ -9,7 +9,7 @@ export async function shareResult(result) {
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "InfiniToe -- I just won!",
+        title: "Phantom Tac Toe -- I just won!",
         text,
         url: window.location.origin,
       });
@@ -26,12 +26,12 @@ export async function shareResult(result) {
 
 export async function shareChallenge(roomCode) {
   const url = `${window.location.origin}/#/join/${roomCode}`;
-  const text = `Challenge me in InfiniToe!\n\nInfinite 3D Tic-Tac-Toe -- no draws, just vibes!\n\nJoin my room: ${url}`;
+  const text = `Challenge me in Phantom Tac Toe!\n\nInfinite 3D Tic-Tac-Toe -- no draws, just vibes!\n\nJoin my room: ${url}`;
 
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "InfiniToe Challenge!",
+        title: "Phantom Tac Toe Challenge!",
         text,
         url,
       });
@@ -51,7 +51,7 @@ function generateShareText(result) {
   const streakText = result.streak > 1 ? `\n${result.streak} win streak!` : "";
 
   return (
-    `${statusIcon} InfiniToe Result:\n\n` +
+    `${statusIcon} Phantom Tac Toe Result:\n\n` +
     `${result.won ? "Won" : "Lost"} vs ${result.opponent}` +
     `${streakText}\n` +
     `Level ${result.level}\n\n` +

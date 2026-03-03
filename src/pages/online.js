@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Online Lobby Page
+   Phantom Tac Toe - Online Lobby Page
    Create/Join room
    ======================================== */
 

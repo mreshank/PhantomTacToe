@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Turn Timer
+   Phantom Tac Toe - Turn Timer
    ======================================== */
 
 export class TurnTimer {

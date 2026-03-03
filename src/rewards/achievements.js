@@ -1,5 +1,5 @@
 /* ========================================
-   InfiniToe - Achievements System
+   Phantom Tac Toe - Achievements System
    ======================================== */
 
 import { loadData, saveData } from "../data/storage.js";

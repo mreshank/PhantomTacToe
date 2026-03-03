@@ -1,6 +1,6 @@
 /* TEAM */
-  Made by: InfiniToe Team
-  Site: https://infinitoe.game
+  Made by: Phantom Tac Toe Team
+  Site: https://phantomtactoe.game
 
 /* TECHNOLOGY */
   Platform: Web (Browser)
