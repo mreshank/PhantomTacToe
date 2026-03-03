@@ -5,6 +5,71 @@
 const STORAGE_KEY = "phantomtactoe_data";
 const STORAGE_VERSION = 1;
 
+let syncInProgress = false;
+
+/**
+ * Sync local data with Convex (Global Source of Truth)
+ */
+export async function syncWithCloud(convexClient) {
+  if (syncInProgress) return;
+
+  const data = loadData();
+  if (!data.profile.clerkUserId) return;
+
+  try {
+    syncInProgress = true;
+    console.log("Cloud Sync: Synchronizing stats...");
+
+    // Call Convex mutation to sync stats
+    const cloudProfile = await convexClient.mutation("users:syncUser", {
+      clerkId: data.profile.clerkUserId,
+      name: data.profile.name,
+      avatarUrl: data.profile.avatarUrl || "",
+      avatarIndex: data.profile.avatarIndex || 0,
+      level: data.profile.level,
+      xp: data.profile.xp,
+      wins: data.stats.wins,
+      losses: data.stats.losses,
+      streak: data.stats.currentStreak,
+      bestStreak: data.stats.bestStreak,
+      coins: data.stats.coins,
+      achievements: data.stats.achievements || [],
+    });
+
+    if (cloudProfile) {
+      // If cloud profile is more advanced, update local
+      const needsUpdate =
+        cloudProfile.xp > data.profile.xp ||
+        cloudProfile.level > data.profile.level ||
+        cloudProfile.coins > data.stats.coins;
+
+      if (needsUpdate) {
+        console.log("Cloud Sync: Local profile updated from cloud");
+        saveData({
+          ...data,
+          profile: {
+            ...data.profile,
+            level: cloudProfile.level,
+            xp: cloudProfile.xp,
+          },
+          stats: {
+            ...data.stats,
+            wins: cloudProfile.wins,
+            losses: cloudProfile.losses,
+            coins: cloudProfile.coins,
+            bestStreak: cloudProfile.bestStreak,
+            achievements: cloudProfile.achievements,
+          },
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Cloud Sync Error:", err);
+  } finally {
+    syncInProgress = false;
+  }
+}
+
 const DEFAULT_DATA = {
   version: STORAGE_VERSION,
   profile: {
@@ -83,6 +148,11 @@ export function saveData(data) {
   try {
     cachedData = data;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    // Trigger cloud sync if authenticated and convex is ready
+    if (window.convexClient && data.profile.clerkUserId && !syncInProgress) {
+      syncWithCloud(window.convexClient);
+    }
   } catch (e) {
     console.warn("Failed to save data:", e);
   }

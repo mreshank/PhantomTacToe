@@ -43,9 +43,9 @@ creating an endlessly replayable game.
 
 ## Links
 
-- Homepage: https://phantomtactoe.game
-- Play Now: https://phantomtactoe.game/#/play/solo
+- Homepage: https://phantomtactoe.mreshank.com
+- Play Now: https://phantomtactoe.mreshank.com/#/play/solo
 
 ## Contact
 
-- Developer site: https://phantomtactoe.game
+- Developer : contact@mreshank.com

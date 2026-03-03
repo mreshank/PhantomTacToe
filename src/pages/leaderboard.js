@@ -12,31 +12,86 @@ import {
   avatarIcons,
 } from "../utils/icons.js";
 
-export function renderLeaderboard(container) {
+export async function renderLeaderboard(container) {
   const data = loadData();
-  const leaderboard = data.leaderboard || [];
+  let currentTab = "local";
+  let leaderboardData = data.leaderboard || [];
 
-  container.innerHTML = `
-    <div class="page leaderboard-page">
-      <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); margin-bottom: var(--space-xl); display: flex; align-items: center; gap: var(--space-sm)">
-        <span class="icon-header" style="color:var(--neon-gold)">${iconMedal}</span> Leaderboard
-      </h1>
+  async function updateView() {
+    container.innerHTML = `
+      <div class="page leaderboard-page">
+        <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); margin-bottom: var(--space-xl); display: flex; align-items: center; gap: var(--space-sm)">
+          <span class="icon-header" style="color:var(--neon-gold)">${iconMedal}</span> Leaderboard
+        </h1>
 
-      <div class="tabs">
-        <div class="tab active" data-tab="all">All Time</div>
-        <div class="tab" data-tab="weekly">This Week</div>
-        <div class="tab" data-tab="daily">Today</div>
+        <div class="tabs">
+          <div class="tab ${currentTab === "local" ? "active" : ""}" data-tab="local">Local History</div>
+          <div class="tab ${currentTab === "global" ? "active" : ""}" data-tab="global">Global Ranking</div>
+        </div>
+
+        <div id="leaderboard-content">
+          ${renderList(leaderboardData, currentTab)}
+        </div>
       </div>
+    `;
 
-      ${
-        leaderboard.length > 0
-          ? `
+    // Tab switching
+    container.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", async () => {
+        const tabType = tab.dataset.tab;
+        if (tabType === currentTab) return;
+
+        currentTab = tabType;
+        if (currentTab === "global") {
+          const content = container.querySelector("#leaderboard-content");
+          content.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-tertiary)">Loading global scores...</div>`;
+
+          if (window.convexClient) {
+            try {
+              const globalData = await window.convexClient.query(
+                "leaderboard:getGlobalLeaderboard",
+              );
+              leaderboardData = globalData.map((u) => ({
+                name: u.name,
+                score: u.wins,
+                streak: u.bestStreak,
+                isGlobal: true,
+              }));
+            } catch (err) {
+              console.error("Failed to fetch global leaderboard:", err);
+              showToast("Failed to load global scores", "alert");
+            }
+          } else {
+            leaderboardData = [];
+          }
+        } else {
+          leaderboardData = data.leaderboard || [];
+        }
+        updateView();
+      });
+    });
+  }
+
+  function renderList(list, type) {
+    if (list.length === 0) {
+      return `
+        <div style="text-align: center; padding: var(--space-3xl); color: var(--text-tertiary)">
+          <div class="icon-lg" style="margin-bottom: var(--space-md); color: var(--neon-gold)">${iconTrophy}</div>
+          <h3 style="margin-bottom: var(--space-sm); color: var(--text-secondary)">
+            ${type === "global" ? "Cloud connection required" : "No entries yet"}
+          </h3>
+          <p>${type === "global" ? "Sign in to see how you stack up against the world!" : "Start playing to climb the ranks!"}</p>
+        </div>
+      `;
+    }
+
+    return `
       <div class="leaderboard-list" style="display: flex; flex-direction: column; gap: var(--space-sm)">
-        ${leaderboard
-          .slice(0, 20)
+        ${list
+          .slice(0, 50)
           .map(
             (entry, i) => `
-          <div class="leaderboard-entry ${entry.name === data.profile.name ? "card-glow" : ""}" style="animation-delay: ${i * 50}ms; animation: slideInUp 0.4s ease ${i * 50}ms both">
+          <div class="leaderboard-entry ${entry.name === data.profile.name ? "card-glow" : ""}" style="animation: slideInUp 0.4s ease ${i * 30}ms both">
             <div class="leaderboard-rank">${getRankDisplay(i + 1)}</div>
             <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple)">
               ${getAvatarIcon(i)}
@@ -46,7 +101,7 @@ export function renderLeaderboard(container) {
                 ${entry.name}${entry.name === data.profile.name ? ' <span style="color: var(--neon-purple)">(You)</span>' : ""}
               </div>
               <div style="font-size: var(--text-xs); color: var(--text-tertiary); display: flex; align-items: center; gap: 4px">
-                <span class="icon-xs" style="color: var(--neon-gold)">${iconFire}</span> ${entry.streak || 0} streak
+                <span class="icon-xs" style="color: var(--neon-gold)">${iconFire}</span> ${entry.streak || 0} best streak
               </div>
             </div>
             <div style="text-align: right">
@@ -58,27 +113,10 @@ export function renderLeaderboard(container) {
           )
           .join("")}
       </div>
-      `
-          : `
-      <div style="text-align: center; padding: var(--space-3xl); color: var(--text-tertiary)">
-        <div class="icon-lg" style="margin-bottom: var(--space-md); color: var(--neon-gold)">${iconTrophy}</div>
-        <h3 style="margin-bottom: var(--space-sm); color: var(--text-secondary)">No entries yet</h3>
-        <p>Start playing to climb the ranks! Every win gets recorded here.</p>
-      </div>
-      `
-      }
-    </div>
-  `;
+    `;
+  }
 
-  // Tab switching
-  document.querySelectorAll(".tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      document
-        .querySelectorAll(".tab")
-        .forEach((t) => t.classList.remove("active"));
-      tab.classList.add("active");
-    });
-  });
+  await updateView();
 }
 
 function getRankDisplay(rank) {

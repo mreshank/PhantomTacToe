@@ -295,8 +295,16 @@ function handleWin(result, mode) {
   }
 
   // Audio & haptics
-  const isPlayerWin =
-    (mode === "solo" && winner === PLAYERS.X) || mode !== "solo";
+  let isPlayerWin = false;
+  if (mode === "solo") {
+    isPlayerWin = winner === PLAYERS.X;
+  } else if (mode === "online") {
+    isPlayerWin = winner === onlinePlayer;
+  } else {
+    // Local 2P (shared screen)
+    isPlayerWin = true;
+  }
+
   if (isPlayerWin) {
     audio.playWin();
     vibrateWin();
@@ -321,10 +329,14 @@ function handleWin(result, mode) {
       const streakBonus = Math.min(data.stats.currentStreak, 5) * 10;
       xpGained += streakBonus;
     }
+  } else if (mode === "online") {
+    const won = winner === onlinePlayer;
+    recordGameResult("online", won);
+    xpGained = won ? 40 : 10;
   } else {
-    // For local, count as a game for the winning player
-    recordGameResult(mode, true);
-    xpGained = 30;
+    // Local 2P
+    recordGameResult("local", true);
+    xpGained = 20;
   }
 
   if (xpGained > 0) {

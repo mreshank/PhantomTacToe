@@ -14,6 +14,13 @@ import { router } from "./router.js";
 import { loadData, getSettings, updateProfile } from "./data/storage.js";
 import { audio } from "./utils/audio.js";
 import { initClerk, getClerkProfile, onAuthChange } from "./auth/auth.js";
+import { ConvexClient } from "convex/browser";
+import { syncWithCloud } from "./data/storage.js";
+
+// Initialize Convex as Global Source of Truth
+const CONVEX_URL = import.meta.env.VITE_CONVEX_URL;
+export const convex = CONVEX_URL ? new ConvexClient(CONVEX_URL) : null;
+if (convex) window.convexClient = convex; // Make available for storage.js shadow sync
 import {
   iconHome,
   iconPlay,
@@ -56,6 +63,11 @@ async function initApp() {
         avatarUrl: clerkProfile.avatarUrl,
         clerkUserId: clerkProfile.id,
       });
+
+      // Unified Cloud Sync (Convex as Source of Truth)
+      if (convex) {
+        syncWithCloud(convex);
+      }
     }
   });
 

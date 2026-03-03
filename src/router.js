@@ -55,9 +55,17 @@ export class Router {
     // Render new page
     if (matchedHandler && this.appContainer) {
       this.currentRoute = hash;
-      const cleanup = matchedHandler(this.appContainer, params);
-      if (typeof cleanup === "function") {
-        this.currentCleanup = cleanup;
+      const result = matchedHandler(this.appContainer, params);
+
+      // Handle async handlers (like the new Leaderboard)
+      if (result instanceof Promise) {
+        result.then((cleanup) => {
+          if (typeof cleanup === "function") {
+            this.currentCleanup = cleanup;
+          }
+        });
+      } else if (typeof result === "function") {
+        this.currentCleanup = result;
       }
     }
   }

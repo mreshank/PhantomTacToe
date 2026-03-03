@@ -1,6 +1,6 @@
 /* TEAM */
   Made by: Phantom Tac Toe Team
-  Site: https://phantomtactoe.game
+  Site: https://phantomtactoe.mreshank.com
 
 /* TECHNOLOGY */
   Platform: Web (Browser)

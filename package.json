@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@clerk/clerk-js": "^5.125.4",
+    "convex": "^1.32.0",
     "peerjs": "^1.5.5",
     "three": "^0.183.2"
   }
