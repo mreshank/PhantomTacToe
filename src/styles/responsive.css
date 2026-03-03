@@ -1,0 +1,323 @@
+/* ===================================
+   InfiniToe - Responsive Styles
+   =================================== */
+
+/* ---- Mobile (default / < 480px) ---- */
+@media (max-width: 480px) {
+    .page {
+        padding: var(--space-md);
+        padding-bottom: calc(70px + var(--space-md));
+    }
+
+    .mode-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .game-layout {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .player-panels {
+        flex-direction: row;
+        justify-content: space-between;
+        order: -1;
+    }
+
+    .player-panel {
+        flex: 1;
+        padding: var(--space-sm);
+    }
+
+    .player-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .player-name {
+        font-size: var(--text-sm);
+    }
+
+    .stats-row {
+        gap: var(--space-sm);
+    }
+
+    .stat-item {
+        min-width: 60px;
+        padding: var(--space-sm);
+    }
+
+    .stat-value {
+        font-size: var(--text-xl);
+    }
+
+    .modal {
+        padding: var(--space-lg);
+        margin: var(--space-md);
+    }
+
+    .toast-container {
+        top: var(--space-md);
+        right: var(--space-md);
+        left: var(--space-md);
+    }
+
+    .toast {
+        max-width: 100%;
+    }
+
+    .room-code-char {
+        width: 38px;
+        height: 46px;
+        font-size: var(--text-xl);
+    }
+
+    .daily-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+    }
+
+    .daily-item {
+        font-size: var(--text-xs);
+    }
+
+    .achievement-card {
+        padding: var(--space-sm);
+    }
+
+    .achievement-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .emoji-bar {
+        gap: 2px;
+    }
+
+    .emoji-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    #game-canvas-container {
+        max-width: 340px;
+        max-height: 340px;
+    }
+}
+
+/* ---- Tablet (481px - 768px) ---- */
+@media (min-width: 481px) and (max-width: 768px) {
+    .mode-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .game-layout {
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+
+    .player-panels {
+        flex-direction: row;
+        justify-content: space-between;
+        order: -1;
+    }
+
+    #game-canvas-container {
+        max-width: 420px;
+        max-height: 420px;
+    }
+}
+
+/* ---- Desktop (769px+) ---- */
+@media (min-width: 769px) {
+    .mode-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .game-layout {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        gap: var(--space-2xl);
+    }
+
+    .game-center {
+        flex: 0 0 auto;
+    }
+
+    .player-panels {
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+
+    .game-sidebar {
+        width: 220px;
+        flex-shrink: 0;
+    }
+
+    .bottom-nav {
+        display: none;
+    }
+
+    .desktop-nav {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: var(--z-nav);
+        background: rgba(10, 10, 26, 0.9);
+        border-bottom: 1px solid var(--glass-border);
+        backdrop-filter: blur(var(--glass-blur));
+        padding: var(--space-sm) var(--space-xl);
+    }
+
+    .desktop-nav .nav-items {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .desktop-nav .nav-brand {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: var(--text-xl);
+        margin-right: auto;
+    }
+
+    .desktop-nav .nav-brand .logo-inf {
+        background: var(--gradient-main);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .desktop-nav .nav-item {
+        flex-direction: row;
+        gap: var(--space-xs);
+        font-size: var(--text-sm);
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .page {
+        padding-top: calc(60px + var(--space-xl));
+        padding-bottom: var(--space-xl);
+    }
+
+    .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .leaderboard-list {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .shop-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ---- Wide (1200px+) ---- */
+@media (min-width: 1200px) {
+    #game-canvas-container {
+        max-width: 500px;
+        max-height: 500px;
+    }
+
+    .game-sidebar {
+        width: 260px;
+    }
+
+    .achievements-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ---- Landscape mobile ---- */
+@media (max-height: 500px) and (orientation: landscape) {
+    .page {
+        padding: var(--space-sm);
+        padding-bottom: calc(60px + var(--space-sm));
+    }
+
+    .game-layout {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    #game-canvas-container {
+        max-width: 280px;
+        max-height: 280px;
+    }
+
+    .player-panels {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+}
+
+/* ---- Reduced Motion ---- */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .bg-particles {
+        display: none;
+    }
+}
+
+/* ---- High Contrast ---- */
+@media (prefers-contrast: high) {
+    :root {
+        --glass-border: rgba(255, 255, 255, 0.3);
+        --text-secondary: rgba(255, 255, 255, 0.85);
+        --text-tertiary: rgba(255, 255, 255, 0.7);
+    }
+}
+
+/* ---- Touch devices ---- */
+@media (hover: none) {
+    .mode-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .mode-card:active {
+        transform: scale(0.97);
+    }
+
+    .btn:hover {
+        transform: none;
+    }
+
+    .btn:active {
+        transform: scale(0.96);
+    }
+}
+
+/* ---- Safe areas (notched phones) ---- */
+@supports (padding: max(0px)) {
+    .bottom-nav {
+        padding-left: max(var(--space-sm), env(safe-area-inset-left));
+        padding-right: max(var(--space-sm), env(safe-area-inset-right));
+    }
+
+    .page {
+        padding-left: max(var(--space-lg), env(safe-area-inset-left));
+        padding-right: max(var(--space-lg), env(safe-area-inset-right));
+    }
+}
