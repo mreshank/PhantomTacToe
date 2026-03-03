@@ -13,6 +13,7 @@
     "vite-plugin-pwa": "^1.2.0"
   },
   "dependencies": {
+    "@clerk/clerk-js": "^5.125.4",
     "peerjs": "^1.5.5",
     "three": "^0.183.2"
   }

@@ -29,24 +29,11 @@ export function renderHome(container) {
   const data = loadData();
   const xp = getXPProgress();
   const canClaim = canClaimDailyReward();
-  const avatarIdx = avatarIcons.findIndex((_, i) => {
-    const avatars = [
-      "😎",
-      "🤠",
-      "🥷",
-      "👽",
-      "🤖",
-      "🎃",
-      "🦊",
-      "🐱",
-      "🌟",
-      "💀",
-      "🔥",
-      "🧠",
-    ];
-    return avatars[i] === data.profile.avatar;
-  });
-  const avatarSvg = avatarIdx >= 0 ? avatarIcons[avatarIdx] : avatarIcons[0];
+
+  // Use numeric avatar index from profile (or Clerk avatar URL if available)
+  const avatarIdx =
+    typeof data.profile.avatar === "number" ? data.profile.avatar : 0;
+  const avatarSvg = avatarIcons[avatarIdx] || avatarIcons[0];
 
   container.innerHTML = `
     <div class="page home-page" id="home-page">

@@ -36,22 +36,10 @@ export function renderRewards(container) {
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
-  // Map old emoji avatars to SVG
-  const avatarIdx = [
-    "😎",
-    "🤠",
-    "🥷",
-    "👽",
-    "🤖",
-    "🎃",
-    "🦊",
-    "🐱",
-    "🌟",
-    "💀",
-    "🔥",
-    "🧠",
-  ].indexOf(data.profile.avatar);
-  const avatarSvg = avatarIdx >= 0 ? avatarIcons[avatarIdx] : avatarIcons[0];
+  // Use numeric avatar index from profile
+  const avatarIdx =
+    typeof data.profile.avatar === "number" ? data.profile.avatar : 0;
+  const avatarSvg = avatarIcons[avatarIdx] || avatarIcons[0];
 
   // Shop theme icons
   const shopIcons = {

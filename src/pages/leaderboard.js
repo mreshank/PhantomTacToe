@@ -14,12 +14,7 @@ import {
 
 export function renderLeaderboard(container) {
   const data = loadData();
-
-  // Create default leaderboard entries if empty
-  const leaderboard =
-    data.leaderboard.length > 0
-      ? data.leaderboard
-      : getDefaultLeaderboard(data);
+  const leaderboard = data.leaderboard || [];
 
   container.innerHTML = `
     <div class="page leaderboard-page">
@@ -33,6 +28,9 @@ export function renderLeaderboard(container) {
         <div class="tab" data-tab="daily">Today</div>
       </div>
 
+      ${
+        leaderboard.length > 0
+          ? `
       <div class="leaderboard-list" style="display: flex; flex-direction: column; gap: var(--space-sm)">
         ${leaderboard
           .slice(0, 20)
@@ -41,7 +39,7 @@ export function renderLeaderboard(container) {
           <div class="leaderboard-entry ${entry.name === data.profile.name ? "card-glow" : ""}" style="animation-delay: ${i * 50}ms; animation: slideInUp 0.4s ease ${i * 50}ms both">
             <div class="leaderboard-rank">${getRankDisplay(i + 1)}</div>
             <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple)">
-              ${entry.name === data.profile.name ? getPlayerAvatar(data) : getAvatarIcon(i)}
+              ${getAvatarIcon(i)}
             </div>
             <div style="flex: 1; min-width: 0">
               <div style="font-family: var(--font-display); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -60,16 +58,14 @@ export function renderLeaderboard(container) {
           )
           .join("")}
       </div>
-
-      ${
-        leaderboard.length === 0
-          ? `
-        <div style="text-align: center; padding: var(--space-3xl); color: var(--text-tertiary)">
-          <div style="margin-bottom: var(--space-md); color: var(--neon-gold)">${iconTrophy}</div>
-          <p>No entries yet. Start playing to climb the ranks!</p>
-        </div>
       `
-          : ""
+          : `
+      <div style="text-align: center; padding: var(--space-3xl); color: var(--text-tertiary)">
+        <div class="icon-lg" style="margin-bottom: var(--space-md); color: var(--neon-gold)">${iconTrophy}</div>
+        <h3 style="margin-bottom: var(--space-sm); color: var(--text-secondary)">No entries yet</h3>
+        <p>Start playing to climb the ranks! Every win gets recorded here.</p>
+      </div>
+      `
       }
     </div>
   `;
@@ -85,27 +81,6 @@ export function renderLeaderboard(container) {
   });
 }
 
-function getDefaultLeaderboard(data) {
-  const bots = [
-    { name: "NeonNinja", score: 42, streak: 7 },
-    { name: "CyberPunk", score: 38, streak: 5 },
-    { name: "PixelQueen", score: 35, streak: 8 },
-    { name: "GlowBot", score: 31, streak: 4 },
-    { name: "VibeMaster", score: 28, streak: 3 },
-    { name: "ZapAttack", score: 24, streak: 6 },
-    { name: "StarStrike", score: 20, streak: 2 },
-  ];
-
-  const player = {
-    name: data.profile.name,
-    score: data.stats.wins,
-    streak: data.stats.currentStreak,
-  };
-
-  const combined = [...bots, player].sort((a, b) => b.score - a.score);
-  return combined;
-}
-
 function getRankDisplay(rank) {
   switch (rank) {
     case 1:
@@ -117,25 +92,6 @@ function getRankDisplay(rank) {
     default:
       return `#${rank}`;
   }
-}
-
-function getPlayerAvatar(data) {
-  const avatarMap = [
-    "😎",
-    "🤠",
-    "🥷",
-    "👽",
-    "🤖",
-    "🎃",
-    "🦊",
-    "🐱",
-    "🌟",
-    "💀",
-    "🔥",
-    "🧠",
-  ];
-  const idx = avatarMap.indexOf(data.profile.avatar);
-  return idx >= 0 ? avatarIcons[idx] : avatarIcons[0];
 }
 
 function getAvatarIcon(index) {

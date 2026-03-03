@@ -9,7 +9,7 @@ export async function shareResult(result) {
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "InfiniToe — I just won! 🎮",
+        title: "InfiniToe -- I just won!",
         text,
         url: window.location.origin,
       });
@@ -26,12 +26,12 @@ export async function shareResult(result) {
 
 export async function shareChallenge(roomCode) {
   const url = `${window.location.origin}/#/join/${roomCode}`;
-  const text = `🎮 Challenge me in InfiniToe!\n\n♾️ Infinite 3D Tic-Tac-Toe — no draws, just vibes!\n\nJoin my room: ${url}`;
+  const text = `Challenge me in InfiniToe!\n\nInfinite 3D Tic-Tac-Toe -- no draws, just vibes!\n\nJoin my room: ${url}`;
 
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "InfiniToe Challenge! 🎮",
+        title: "InfiniToe Challenge!",
         text,
         url,
       });
@@ -47,16 +47,15 @@ export async function shareChallenge(roomCode) {
 }
 
 function generateShareText(result) {
-  const emojis = result.won ? "🏆🔥" : "😤";
-  const streakText =
-    result.streak > 1 ? `\n🔥 ${result.streak} win streak!` : "";
+  const statusIcon = result.won ? "[W]" : "[L]";
+  const streakText = result.streak > 1 ? `\n${result.streak} win streak!` : "";
 
   return (
-    `${emojis} InfiniToe Result:\n\n` +
-    `${result.won ? "✅ Won" : "❌ Lost"} vs ${result.opponent}` +
+    `${statusIcon} InfiniToe Result:\n\n` +
+    `${result.won ? "Won" : "Lost"} vs ${result.opponent}` +
     `${streakText}\n` +
-    `📊 Level ${result.level}\n\n` +
-    `♾️ Play infinite 3D Tic-Tac-Toe → ${window.location.origin}`
+    `Level ${result.level}\n\n` +
+    `Play infinite 3D Tic-Tac-Toe -> ${window.location.origin}`
   );
 }
 

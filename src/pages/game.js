@@ -355,6 +355,11 @@ function handleWin(result, mode) {
 
   // Show result modal
   setTimeout(() => showResultModal(winner, mode), 1200);
+
+  // Notify opponent of game over (online)
+  if (isOnlineGame) {
+    multiplayer.sendGameOver(winner, result.winLine);
+  }
 }
 
 function scheduleAIMove() {
@@ -556,21 +561,95 @@ function setupOnlineGame() {
   // Send our info
   multiplayer.sendPlayerInfo(data.profile.name);
 
+  // Disable interaction until both players ready
+  interaction.setEnabled(false);
+
+  // Track readiness
+  let localReady = false;
+  let remoteReady = false;
+  let rematchPending = false;
+
+  function checkBothReady() {
+    if (localReady && remoteReady) {
+      interaction.setEnabled(true);
+      showToast(
+        "Game on! " +
+          (onlinePlayer === PLAYERS.X ? "Your turn" : "Opponent's turn"),
+        "check",
+        2000,
+      );
+    }
+  }
+
+  // Signal ready after a brief delay (ensures connection is stable)
+  setTimeout(() => {
+    localReady = true;
+    multiplayer.sendReady();
+    checkBothReady();
+  }, 500);
+
   multiplayer.onMessage = (msg) => {
     switch (msg.type) {
       case "move":
-        if (gameState.currentPlayer !== onlinePlayer) {
-          executeMove(msg.cellIndex, "online");
+        // Validate: only accept moves when it's the opponent's turn
+        if (gameState.currentPlayer === onlinePlayer) {
+          console.warn("Ignoring out-of-turn move from opponent");
+          break;
         }
+        // Validate: cell must be empty
+        if (gameState.board[msg.cellIndex] !== null) {
+          console.warn("Ignoring move on occupied cell:", msg.cellIndex);
+          break;
+        }
+        executeMove(msg.cellIndex, "online");
         break;
+
       case "reaction":
         showFloatingReaction(msg.reaction);
         break;
+
       case "rematch":
+        // Opponent wants a rematch — auto-accept and start
+        rematchPending = false;
+        localReady = false;
+        remoteReady = false;
         startRematch("online");
+        multiplayer.sendRematchAccept();
+        // Re-enter ready flow
+        setTimeout(() => {
+          localReady = true;
+          multiplayer.sendReady();
+          checkBothReady();
+        }, 500);
         break;
+
+      case "rematchAccept":
+        // Our rematch request was accepted
+        rematchPending = false;
+        localReady = false;
+        remoteReady = false;
+        startRematch("online");
+        setTimeout(() => {
+          localReady = true;
+          multiplayer.sendReady();
+          checkBothReady();
+        }, 500);
+        break;
+
       case "playerInfo":
         updateOpponentName(msg.name);
+        break;
+
+      case "ready":
+        remoteReady = true;
+        checkBothReady();
+        break;
+
+      case "gameOver":
+        // Opponent reports game over (in case we missed it)
+        if (gameState.phase === PHASES.PLAYING) {
+          console.log("Received gameOver from opponent:", msg.winner);
+        }
         break;
     }
   };
@@ -582,6 +661,7 @@ function setupOnlineGame() {
       statusEl.className = "badge badge-pink";
     }
     showToast("Opponent disconnected", "alert", 3000);
+    interaction.setEnabled(false);
   };
 }
 

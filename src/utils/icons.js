@@ -143,6 +143,10 @@ export const iconDiamond = svg(
   `<path d="M2.5 8.5L12 2l9.5 6.5L12 22 2.5 8.5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2.5 8.5h19" stroke="currentColor" stroke-width="2"/>`,
 );
 
+export const iconUser = svg(
+  `<circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M20 21a8 8 0 10-16 0" stroke="currentColor" stroke-width="2"/>`,
+);
+
 export const iconUsers = svg(
   `<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="2"/>`,
 );

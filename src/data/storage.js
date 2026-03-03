@@ -9,7 +9,9 @@ const DEFAULT_DATA = {
   version: STORAGE_VERSION,
   profile: {
     name: "Player",
-    avatar: "😎",
+    avatar: 0, // Index into avatarIcons array
+    avatarUrl: null, // Clerk profile image URL (if signed in)
+    clerkUserId: null,
     level: 1,
     xp: 0,
     coins: 0,

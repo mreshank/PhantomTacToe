@@ -9,8 +9,17 @@ import {
   iconSettings,
   iconTrash,
   iconHeart,
+  iconUser,
   avatarIcons,
 } from "../utils/icons.js";
+import {
+  isAuthAvailable,
+  isSignedIn,
+  getClerkProfile,
+  signIn,
+  signOut,
+  openUserProfile,
+} from "../auth/auth.js";
 
 export function renderSettings(container) {
   const data = loadData();
@@ -30,26 +39,50 @@ export function renderSettings(container) {
     "Fire",
     "Brain",
   ];
-  const avatarMap = [
-    "😎",
-    "🤠",
-    "🥷",
-    "👽",
-    "🤖",
-    "🎃",
-    "🦊",
-    "🐱",
-    "🌟",
-    "💀",
-    "🔥",
-    "🧠",
-  ];
+  const currentAvatarIdx =
+    typeof data.profile.avatar === "number" ? data.profile.avatar : 0;
+  const authAvailable = isAuthAvailable();
+  const signedIn = isSignedIn();
+  const clerkProfile = getClerkProfile();
 
   container.innerHTML = `
     <div class="page settings-page">
       <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); margin-bottom: var(--space-xl); display: flex; align-items: center; gap: var(--space-sm)">
         <span class="icon-header">${iconSettings}</span> Settings
       </h1>
+
+      <!-- Account -->
+      ${
+        authAvailable
+          ? `
+      <div class="section-header">
+        <h2 class="section-title">Account</h2>
+      </div>
+      <div class="card" style="margin-bottom: var(--space-xl)">
+        ${
+          signedIn
+            ? `
+          <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md)">
+            ${clerkProfile?.avatarUrl ? `<img src="${clerkProfile.avatarUrl}" alt="Avatar" style="width: 48px; height: 48px; border-radius: var(--radius-full); object-fit: cover" />` : `<div class="player-avatar" style="width: 48px; height: 48px; background: var(--bg-tertiary); color: var(--neon-purple)">${iconUser}</div>`}
+            <div style="flex: 1">
+              <div style="font-family: var(--font-display); font-weight: 600">${clerkProfile?.name || "Player"}</div>
+              <div style="font-size: var(--text-xs); color: var(--text-tertiary)">${clerkProfile?.email || ""}</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: var(--space-sm)">
+            <button class="btn btn-secondary btn-block" id="btn-manage-account">Manage Account</button>
+            <button class="btn btn-ghost btn-block" id="btn-sign-out">Sign Out</button>
+          </div>
+        `
+            : `
+          <p style="color: var(--text-secondary); margin-bottom: var(--space-md)">Sign in to sync your progress and play online with your identity.</p>
+          <button class="btn btn-primary btn-lg btn-block" id="btn-sign-in" style="background: var(--gradient-main)">${iconUser} Sign in with Google</button>
+        `
+        }
+      </div>
+      `
+          : ""
+      }
 
       <!-- Profile -->
       <div class="section-header">
@@ -66,9 +99,9 @@ export function renderSettings(container) {
             ${avatarIcons
               .map(
                 (svg, i) => `
-              <button class="avatar-pick-btn ${avatarMap[i] === data.profile.avatar ? "active" : ""}" data-avatar="${avatarMap[i]}" data-index="${i}"
+              <button class="avatar-pick-btn ${i === currentAvatarIdx ? "active" : ""}" data-avatar-index="${i}"
                 title="${avatarLabels[i]}"
-                style="${avatarMap[i] === data.profile.avatar ? "border: 2px solid var(--neon-purple); box-shadow: var(--shadow-neon-purple)" : ""}">
+                style="${i === currentAvatarIdx ? "border: 2px solid var(--neon-purple); box-shadow: var(--shadow-neon-purple)" : ""}">
                 ${svg}
               </button>
             `,
@@ -181,10 +214,34 @@ export function renderSettings(container) {
       btn.classList.add("active");
       btn.style.border = "2px solid var(--neon-purple)";
       btn.style.boxShadow = "var(--shadow-neon-purple)";
-      updateProfile({ avatar: btn.dataset.avatar });
+      updateProfile({ avatar: parseInt(btn.dataset.avatarIndex, 10) });
       audio.playClick();
     });
   });
+
+  // Clerk auth buttons
+  document
+    .getElementById("btn-sign-in")
+    ?.addEventListener("click", async () => {
+      audio.playClick();
+      await signIn();
+    });
+
+  document
+    .getElementById("btn-sign-out")
+    ?.addEventListener("click", async () => {
+      audio.playClick();
+      await signOut();
+      showToast("Signed out", "check", 2000);
+      renderSettings(container); // Re-render to update UI
+    });
+
+  document
+    .getElementById("btn-manage-account")
+    ?.addEventListener("click", () => {
+      audio.playClick();
+      openUserProfile();
+    });
 
   document.getElementById("sound-toggle")?.addEventListener("change", (e) => {
     updateSettings({ soundEnabled: e.target.checked });

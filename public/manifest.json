@@ -57,11 +57,46 @@
     ],
     "screenshots": [
         {
-            "src": "/screenshots/gameplay.png",
-            "sizes": "1280x720",
+            "src": "/screenshots/gameplay-828x1792.png",
+            "sizes": "828x1792",
             "type": "image/png",
             "form_factor": "wide",
-            "label": "3D Gameplay"
+            "label": "3D Mobile"
+        },
+        {
+            "src": "/screenshots/gameplay-860x1864.png",
+            "sizes": "860x1864",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "3D iPhone"
+        },
+        {
+            "src": "/screenshots/homepage-828x1792.png",
+            "sizes": "828x1792",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Homepage Mobile"
+        },
+        {
+            "src": "/screenshots/homepage-2048x1440.png",
+            "sizes": "2048x1440",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Homepage Desktop"
+        },
+        {
+            "src": "/screenshots/homepage-2570x1444.png",
+            "sizes": "2570x1444",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Homepage Monitor"
+        },
+        {
+            "src": "/screenshots/homepage-2880x1440.png",
+            "sizes": "2880x1440",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Homepage Desktop 2"
         }
     ],
     "share_target": {

@@ -11,8 +11,9 @@ import "./styles/responsive.css";
 
 // Core modules
 import { router } from "./router.js";
-import { loadData, getSettings } from "./data/storage.js";
+import { loadData, getSettings, updateProfile } from "./data/storage.js";
 import { audio } from "./utils/audio.js";
+import { initClerk, getClerkProfile, onAuthChange } from "./auth/auth.js";
 import {
   iconHome,
   iconPlay,
@@ -30,7 +31,7 @@ import { renderLeaderboard } from "./pages/leaderboard.js";
 import { renderSettings } from "./pages/settings.js";
 
 // ---- Initialize App ---- //
-function initApp() {
+async function initApp() {
   const app = document.getElementById("app");
 
   // Create app shell
@@ -43,6 +44,20 @@ function initApp() {
 
   // Create navigation
   createNavigation(app);
+
+  // Initialize Clerk auth (non-blocking — works without key)
+  await initClerk();
+
+  // Sync Clerk profile to local storage when auth changes
+  onAuthChange((clerkProfile) => {
+    if (clerkProfile) {
+      updateProfile({
+        name: clerkProfile.name,
+        avatarUrl: clerkProfile.avatarUrl,
+        clerkUserId: clerkProfile.id,
+      });
+    }
+  });
 
   // Setup router
   router.setContainer(pageContainer);

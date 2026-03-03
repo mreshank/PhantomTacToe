@@ -177,6 +177,19 @@ export class MultiplayerManager {
     });
   }
 
+  sendGameOver(winner, winLine) {
+    this.send({
+      type: "gameOver",
+      winner,
+      winLine,
+      timestamp: Date.now(),
+    });
+  }
+
+  sendRematchAccept() {
+    this.send({ type: "rematchAccept" });
+  }
+
   disconnect() {
     clearTimeout(this._connectionTimeout);
     if (this.connection) {
@@ -190,6 +203,36 @@ export class MultiplayerManager {
     this.connected = false;
     this.roomCode = null;
     this.opponentName = null;
+    this.reconnectAttempts = 0;
+  }
+
+  attemptReconnect() {
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.log("Max reconnect attempts reached");
+      if (this.onError) this.onError(new Error("Reconnection failed"));
+      return;
+    }
+    this.reconnectAttempts++;
+    console.log(
+      `Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`,
+    );
+
+    // Brief delay before retry
+    setTimeout(() => {
+      if (this.roomCode && !this.connected) {
+        if (this.isHost) {
+          // Host recreates the room
+          this.createRoom().catch(() => {
+            this.attemptReconnect();
+          });
+        } else {
+          // Guest tries to rejoin
+          this.joinRoom(this.roomCode).catch(() => {
+            this.attemptReconnect();
+          });
+        }
+      }
+    }, 2000 * this.reconnectAttempts);
   }
 
   getShareURL() {
