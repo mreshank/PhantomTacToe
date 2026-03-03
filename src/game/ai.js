@@ -107,7 +107,7 @@ function minimax(
   const currentPlayer = isMaximizing ? aiPlayer : humanPlayer;
 
   if (isMaximizing) {
-    let best = -Phantomty;
+    let best = -Infinity;
     for (const cell of emptyCells) {
       const sim = simulateMove(
         board,
@@ -132,7 +132,7 @@ function minimax(
     }
     return best;
   } else {
-    let best = Phantomty;
+    let best = Infinity;
     for (const cell of emptyCells) {
       const sim = simulateMove(
         board,
@@ -226,7 +226,7 @@ function getMediumMove(state, aiPlayer, emptyCells) {
 }
 
 function getHardMove(state, aiPlayer, emptyCells) {
-  let bestScore = -Phantomty;
+  let bestScore = -Infinity;
   let bestMove = emptyCells[0];
 
   for (const cell of emptyCells) {
@@ -243,8 +243,8 @@ function getHardMove(state, aiPlayer, emptyCells) {
       state.moveNumber + 1,
       0,
       false,
-      -Phantomty,
-      Phantomty,
+      -Infinity,
+      Infinity,
       aiPlayer,
     );
 
