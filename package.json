@@ -1,12 +1,17 @@
 {
-  "name": "tictactoe",
+  "name": "phantom-tac-toe",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:convex": "npx convex dev",
+    "dev:all": "npx concurrently \"vite\" \"npx convex dev\"",
     "build": "vite build",
-    "preview": "vite preview"
+    "build:all": "vite build && npx convex deploy",
+    "preview": "vite preview",
+    "convex:deploy": "npx convex deploy",
+    "convex:push": "npx convex dev --once"
   },
   "devDependencies": {
     "vite": "^7.3.1",
