@@ -104,19 +104,19 @@ export function renderHome(container) {
         <h2 class="section-title">Play</h2>
       </div>
       <div class="mode-cards">
-        <button class="mode-card mode-card-featured" data-mode="online" id="btn-online" style="border: 1px solid var(--neon-cyan); box-shadow: var(--shadow-neon-cyan); position: relative; overflow: visible">
+        <button class="mode-card mode-card-featured" data-mode="online" id="btn-online" style="border: 1px solid var(--neon-cyan); box-shadow: var(--shadow-neon-cyan); position: relative; overflow: hidden">
           <span class="popular-badge">POPULAR</span>
-          <span class="mode-icon">${iconGlobe}</span>
+          <span class="mode-bg-icon">${iconGlobe}</span>
           <div class="mode-title">Online Battle</div>
           <div class="mode-desc">Play with friends</div>
         </button>
-        <button class="mode-card" data-mode="solo" id="btn-solo">
-          <span class="mode-icon">${iconRobot}</span>
+        <button class="mode-card" data-mode="solo" id="btn-solo" style="position: relative; overflow: hidden">
+          <span class="mode-bg-icon">${iconRobot}</span>
           <div class="mode-title">Solo Play</div>
           <div class="mode-desc">Challenge the AI</div>
         </button>
-        <button class="mode-card" data-mode="local" id="btn-local">
-          <span class="mode-icon">${iconGamepad}</span>
+        <button class="mode-card" data-mode="local" id="btn-local" style="position: relative; overflow: hidden">
+          <span class="mode-bg-icon">${iconGamepad}</span>
           <div class="mode-title">Local Duel</div>
           <div class="mode-desc">Same device, 2 players</div>
         </button>
@@ -283,17 +283,41 @@ function addHomeStyles() {
     }
     .mode-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: var(--space-md);
       margin-bottom: var(--space-lg);
     }
     .mode-card-featured {
+      grid-column: span 2;
       animation: pulse-glow 3s infinite;
+    }
+    .mode-bg-icon {
+      position: absolute;
+      right: -10px;
+      bottom: -10px;
+      width: 80px;
+      height: 80px;
+      opacity: 0.1;
+      pointer-events: none;
+      color: currentColor;
+    }
+    .mode-card-featured .mode-bg-icon {
+      width: 120px;
+      height: 120px;
+      right: -5px;
+      bottom: -15px;
+      opacity: 0.12;
+      color: var(--neon-cyan);
+    }
+    .mode-bg-icon .icon {
+      width: 100%;
+      height: 100%;
     }
     .popular-badge {
       position: absolute;
-      top: -10px;
-      right: -10px;
+      top: 0;
+      right: 0;
+      translate: -8px 8px;
       background: var(--gradient-main);
       color: white;
       font-size: 10px;

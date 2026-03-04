@@ -35,6 +35,11 @@ export function renderRewards(container) {
   const achievements = getAchievementStatus();
   const canClaim = canClaimDailyReward();
 
+  // Defensive defaults for cosmetics
+  if (!data.cosmetics) data.cosmetics = {};
+  if (!data.cosmetics.unlockedThemes) data.cosmetics.unlockedThemes = ["neon"];
+  if (!data.cosmetics.unlockedFrames) data.cosmetics.unlockedFrames = ["none"];
+
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
   // Use numeric avatar index from profile

@@ -25,6 +25,17 @@ export function renderSettings(container) {
   const data = loadData();
   const settings = data.settings;
 
+  // Defensive defaults for cosmetics (old localStorage may not have these)
+  if (!data.cosmetics) data.cosmetics = {};
+  if (!data.cosmetics.unlockedThemes) data.cosmetics.unlockedThemes = ["neon"];
+  if (!data.cosmetics.unlockedFrames) data.cosmetics.unlockedFrames = ["none"];
+  if (!data.cosmetics.activeTheme) data.cosmetics.activeTheme = "neon";
+  if (!data.cosmetics.activeFrame) data.cosmetics.activeFrame = "none";
+  if (!data.profile.activeTheme)
+    data.profile.activeTheme = data.cosmetics.activeTheme;
+  if (!data.profile.activeFrame)
+    data.profile.activeFrame = data.cosmetics.activeFrame;
+
   const avatarLabels = [
     "Cool",
     "Cowboy",

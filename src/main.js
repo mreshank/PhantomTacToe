@@ -191,6 +191,10 @@ function createNavigation(app) {
         <span class="nav-icon">${iconLeaderboard}</span>
         <span class="nav-label">Ranks</span>
       </a>
+      <a class="nav-item" href="#/rewards" data-route="/rewards">
+        <span class="nav-icon">${iconRewards}</span>
+        <span class="nav-label">Rewards</span>
+      </a>
       <a class="nav-item" href="#/friends" data-route="/friends">
         <span class="nav-icon">${iconHeart}</span>
         <span class="nav-label">Friends</span>

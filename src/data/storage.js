@@ -32,7 +32,7 @@ export async function syncWithCloud(convexClient) {
       losses: data.stats.losses,
       streak: data.stats.currentStreak,
       bestStreak: data.stats.bestStreak,
-      coins: data.stats.coins,
+      coins: data.profile.coins || 0,
       achievements: data.stats.achievements || [],
       activeFrame: data.cosmetics.activeFrame,
     });
