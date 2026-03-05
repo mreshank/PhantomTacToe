@@ -3,19 +3,26 @@
    Web Share API + clipboard fallback
    ======================================== */
 
-export async function shareResult(result) {
+export interface ShareResult {
+  won: boolean;
+  opponent: string;
+  streak: number;
+  level: number;
+}
+
+export async function shareResult(result: ShareResult): Promise<boolean | undefined> {
   const text = generateShareText(result);
 
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "Phantom Tac Toe -- I just won!",
+        title: 'Phantom Tac Toe -- I just won!',
         text,
         url: window.location.origin,
       });
       return true;
-    } catch (e) {
-      if (e.name !== "AbortError") {
+    } catch (e: any) {
+      if (e.name !== 'AbortError') {
         return copyToClipboard(text);
       }
     }
@@ -24,20 +31,20 @@ export async function shareResult(result) {
   }
 }
 
-export async function shareChallenge(roomCode) {
+export async function shareChallenge(roomCode: string): Promise<boolean | undefined> {
   const url = `${window.location.origin}/#/join/${roomCode}`;
   const text = `Challenge me in Phantom Tac Toe!\n\nInfinite 3D Tic-Tac-Toe -- no draws, just vibes!\n\nJoin my room: ${url}`;
 
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "Phantom Tac Toe Challenge!",
+        title: 'Phantom Tac Toe Challenge!',
         text,
         url,
       });
       return true;
-    } catch (e) {
-      if (e.name !== "AbortError") {
+    } catch (e: any) {
+      if (e.name !== 'AbortError') {
         return copyToClipboard(url);
       }
     }
@@ -46,33 +53,33 @@ export async function shareChallenge(roomCode) {
   }
 }
 
-function generateShareText(result) {
-  const statusIcon = result.won ? "[W]" : "[L]";
-  const streakText = result.streak > 1 ? `\n${result.streak} win streak!` : "";
+function generateShareText(result: ShareResult): string {
+  const statusIcon = result.won ? '[W]' : '[L]';
+  const streakText = result.streak > 1 ? `\n${result.streak} win streak!` : '';
 
   return (
     `${statusIcon} Phantom Tac Toe Result:\n\n` +
-    `${result.won ? "Won" : "Lost"} vs ${result.opponent}` +
+    `${result.won ? 'Won' : 'Lost'} vs ${result.opponent}` +
     `${streakText}\n` +
     `Level ${result.level}\n\n` +
     `Play infinite 3D Tic-Tac-Toe -> ${window.location.origin}`
   );
 }
 
-async function copyToClipboard(text) {
+async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text);
     return true;
   } catch {
     // Fallback for older browsers
-    const textarea = document.createElement("textarea");
+    const textarea = document.createElement('textarea');
     textarea.value = text;
-    textarea.style.position = "fixed";
-    textarea.style.left = "-9999px";
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
     document.body.appendChild(textarea);
     textarea.select();
     try {
-      document.execCommand("copy");
+      document.execCommand('copy');
       return true;
     } catch {
       return false;
@@ -82,9 +89,9 @@ async function copyToClipboard(text) {
   }
 }
 
-export function generateRoomCode() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "";
+export function generateRoomCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
   for (let i = 0; i < 6; i++) {
     code += chars[Math.floor(Math.random() * chars.length)];
   }

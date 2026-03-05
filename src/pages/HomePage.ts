@@ -7,11 +7,11 @@ import {
   getXPProgress,
   canClaimDailyReward,
   claimDailyReward,
-} from "../data/storage.js";
-import { router } from "../router.js";
-import { audio } from "../utils/audio.js";
-import { vibrateClick } from "../utils/haptics.js";
-import { showToast, showCoinsToast, showXPToast } from "../components/toast.js";
+} from "../data/storage";
+import { router } from "../core/Router";
+import { audio } from "../utils/audio";
+import { vibrateClick } from "../utils/haptics";
+import { showToast, showCoinsToast, showXPToast } from "../components/toast";
 import {
   iconRobot,
   iconGamepad,
@@ -24,7 +24,7 @@ import {
   iconMuscle,
   iconRocket,
   avatarIcons,
-} from "../utils/icons.js";
+} from "../utils/icons";
 
 export function renderHome(container) {
   const data = loadData();
@@ -147,7 +147,7 @@ export function renderHome(container) {
 
       <!-- How It Works -->
       <div class="how-it-works card" style="margin-top: var(--space-2xl)">
-        <h3 style="font-family: var(--font-display); margin-bottom: var(--space-md)">${iconInfinite} How Infinite Mode Works</h3>
+        <h3 style="font-family: var(--font-display); margin-bottom: var(--space-md)">${iconInfinite} How Phantom Tac Toe Works</h3>
         <p style="color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.8">
           Each player can have <strong style="color: var(--neon-gold)">max 3 pieces</strong> on the board at once.
           When you place your 4th piece, your oldest one fades away ${iconSparkle}<br>

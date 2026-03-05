@@ -3,11 +3,11 @@
    Main gameplay screen
    ======================================== */
 
-import { GameScene } from "../engine/scene.js";
-import { GameBoard } from "../engine/board.js";
-import { PieceManager } from "../engine/pieces.js";
-import { EffectsManager } from "../engine/effects.js";
-import { InteractionHandler } from "../engine/interaction.js";
+import { GameScene } from "../engine/scene";
+import { GameBoard } from "../engine/board";
+import { PieceManager } from "../engine/pieces";
+import { EffectsManager } from "../engine/effects";
+import { InteractionHandler } from "../engine/interaction";
 import {
   createGameState,
   makeMove,
@@ -15,28 +15,28 @@ import {
   startGame,
   PLAYERS,
   PHASES,
-} from "../game/state.js";
-import { getAIMove, getAIMoveDelay } from "../game/ai.js";
-import { TurnTimer } from "../game/timer.js";
+} from "../game/state";
+import { getAIMove, getAIMoveDelay } from "../game/ai";
+import { TurnTimer } from "../game/timer";
 import {
   loadData,
   recordGameResult,
   addXP,
   getXPProgress,
   getSettings,
-} from "../data/storage.js";
-import { checkAchievements } from "../rewards/achievements.js";
-import { multiplayer } from "../multiplayer/connection.js";
-import { shareResult, shareChallenge } from "../utils/share.js";
-import { audio } from "../utils/audio.js";
-import { vibrateMove, vibrateWin, vibrateLose } from "../utils/haptics.js";
+} from "../data/storage";
+import { checkAchievements } from "../rewards/achievements";
+import { multiplayer } from "../multiplayer/connection";
+import { shareResult, shareChallenge } from "../utils/share";
+import { audio } from "../utils/audio";
+import { vibrateMove, vibrateWin, vibrateLose } from "../utils/haptics";
 import {
   showToast,
   showAchievementToast,
   showXPToast,
   showLevelUpToast,
-} from "../components/toast.js";
-import { router } from "../router.js";
+} from "../components/toast";
+import { router } from "../core/Router";
 import {
   iconArrowLeft,
   iconRefresh,
@@ -53,7 +53,7 @@ import {
   iconAlert,
   iconWifi,
   iconWifiOff,
-} from "../utils/icons.js";
+} from "../utils/icons";
 
 let gameScene, board, pieceManager, effects, interaction, timer;
 let gameState;

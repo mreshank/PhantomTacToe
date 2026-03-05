@@ -3,8 +3,8 @@
    My Circle (Friends + Recent Opponents) + Global
    ======================================== */
 
-import { loadData } from "../data/storage.js";
-import { showToast } from "../components/toast.js";
+import { loadData } from "../data/storage";
+import { showToast } from "../components/toast";
 import {
   iconMedal,
   iconFire,
@@ -14,7 +14,7 @@ import {
   iconHeart,
   iconGlobe,
   avatarIcons,
-} from "../utils/icons.js";
+} from "../utils/icons";
 
 export async function renderLeaderboard(container) {
   const data = loadData();

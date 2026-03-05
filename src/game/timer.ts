@@ -2,17 +2,29 @@
    Phantom Tac Toe - Turn Timer
    ======================================== */
 
+export type TimerTickCallback = (remaining: number, total: number) => void;
+export type TimerTimeoutCallback = () => void;
+
 export class TurnTimer {
-  constructor(duration = 15, onTick, onTimeout) {
+  private duration: number;
+  private remaining: number;
+  private onTick: TimerTickCallback | null;
+  private onTimeout: TimerTimeoutCallback | null;
+  private intervalId: ReturnType<typeof setInterval> | null = null;
+  private running = false;
+
+  constructor(
+    duration = 15,
+    onTick?: TimerTickCallback,
+    onTimeout?: TimerTimeoutCallback,
+  ) {
     this.duration = duration;
     this.remaining = duration;
-    this.onTick = onTick;
-    this.onTimeout = onTimeout;
-    this.intervalId = null;
-    this.running = false;
+    this.onTick = onTick || null;
+    this.onTimeout = onTimeout || null;
   }
 
-  start() {
+  start(): void {
     this.stop();
     this.remaining = this.duration;
     this.running = true;
@@ -26,12 +38,12 @@ export class TurnTimer {
     }, 100);
   }
 
-  reset() {
+  reset(): void {
     this.remaining = this.duration;
     if (this.onTick) this.onTick(this.remaining, this.duration);
   }
 
-  stop() {
+  stop(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
@@ -39,11 +51,11 @@ export class TurnTimer {
     this.running = false;
   }
 
-  pause() {
+  pause(): void {
     this.stop();
   }
 
-  resume() {
+  resume(): void {
     if (!this.running) {
       this.running = true;
       this.intervalId = setInterval(() => {
@@ -57,12 +69,16 @@ export class TurnTimer {
     }
   }
 
-  setDuration(duration) {
+  setDuration(duration: number): void {
     this.duration = duration;
     this.remaining = duration;
   }
 
-  getProgress() {
+  getProgress(): number {
     return this.remaining / this.duration;
+  }
+
+  isRunning(): boolean {
+    return this.running;
   }
 }

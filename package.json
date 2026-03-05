@@ -11,9 +11,12 @@
     "build:all": "vite build && npx convex deploy",
     "preview": "vite preview",
     "convex:deploy": "npx convex deploy",
-    "convex:push": "npx convex dev --once"
+    "convex:push": "npx convex dev --once",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/three": "^0.183.1",
+    "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0"
   },

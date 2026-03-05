@@ -3,12 +3,12 @@
    Public/Private Rooms + Quick Join
    ======================================== */
 
-import { multiplayer } from "../multiplayer/connection.js";
-import { loadData } from "../data/storage.js";
-import { shareChallenge } from "../utils/share.js";
-import { audio } from "../utils/audio.js";
-import { showToast } from "../components/toast.js";
-import { router } from "../router.js";
+import { multiplayer } from "../multiplayer/connection";
+import { loadData } from "../data/storage";
+import { shareChallenge } from "../utils/share";
+import { audio } from "../utils/audio";
+import { showToast } from "../components/toast";
+import { router } from "../core/Router";
 import {
   iconArrowLeft,
   iconGlobe,
@@ -21,7 +21,7 @@ import {
   iconBolt,
   iconStar,
   iconUser,
-} from "../utils/icons.js";
+} from "../utils/icons";
 
 let publicRoomsPollInterval = null;
 

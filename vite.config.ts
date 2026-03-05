@@ -1,9 +1,16 @@
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { resolve } from "path";
 
 export default defineConfig({
   // Expose VITE_ prefixed env vars to the client
   envPrefix: "VITE_",
+
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "src"),
+    },
+  },
 
   plugins: [
     VitePWA({

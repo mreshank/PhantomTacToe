@@ -3,7 +3,7 @@
    ======================================== */
 
 import Peer from "peerjs";
-import { generateRoomCode } from "../utils/share.js";
+import { generateRoomCode } from "../utils/share";
 
 const PEERJS_CONFIG = {
   debug: 0,

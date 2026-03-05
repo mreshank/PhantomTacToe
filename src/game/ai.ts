@@ -3,9 +3,9 @@
    Minimax with alpha-beta for infinite mode
    ======================================== */
 
-import { PLAYERS, MAX_PIECES_PER_PLAYER } from "./state.js";
+import { type Player, type GameState, type CellState, type Move, type Difficulty, MAX_PIECES_PER_PLAYER } from './state';
 
-const WIN_LINES = [
+const WIN_LINES: number[][] = [
   [0, 1, 2],
   [3, 4, 5],
   [6, 7, 8],
@@ -16,24 +16,36 @@ const WIN_LINES = [
   [2, 4, 6],
 ];
 
-function checkWinForPlayer(board, player) {
+function checkWinForPlayer(board: (CellState | null)[], player: Player): boolean {
   for (const line of WIN_LINES) {
-    if (line.every((i) => board[i] && board[i].player === player)) {
+    if (line.every((i) => board[i] && board[i]!.player === player)) {
       return true;
     }
   }
   return false;
 }
 
-function getEmptyCells(board) {
-  const cells = [];
+function getEmptyCells(board: (CellState | null)[]): number[] {
+  const cells: number[] = [];
   for (let i = 0; i < 9; i++) {
     if (board[i] === null) cells.push(i);
   }
   return cells;
 }
 
-function simulateMove(board, moveHistory, cellIndex, player, moveNumber) {
+interface SimulationResult {
+  board: (CellState | null)[];
+  history: Move[];
+  removedCell: number | null;
+}
+
+function simulateMove(
+  board: (CellState | null)[],
+  moveHistory: Move[],
+  cellIndex: number,
+  player: Player,
+  moveNumber: number,
+): SimulationResult {
   const newBoard = board.map((c) => (c ? { ...c } : null));
   const newHistory = [...moveHistory, { cellIndex, player, moveNumber }];
 
@@ -41,7 +53,7 @@ function simulateMove(board, moveHistory, cellIndex, player, moveNumber) {
 
   // Check if this player needs to remove oldest
   const playerMoves = newHistory.filter((m) => m.player === player);
-  let removedCell = null;
+  let removedCell: number | null = null;
   if (playerMoves.length > MAX_PIECES_PER_PLAYER) {
     const oldest = playerMoves[0];
     newBoard[oldest.cellIndex] = null;
@@ -53,8 +65,8 @@ function simulateMove(board, moveHistory, cellIndex, player, moveNumber) {
   return { board: newBoard, history: newHistory, removedCell };
 }
 
-function evaluateBoard(board, aiPlayer) {
-  const humanPlayer = aiPlayer === PLAYERS.X ? PLAYERS.O : PLAYERS.X;
+function evaluateBoard(board: (CellState | null)[], aiPlayer: Player): number {
+  const humanPlayer: Player = aiPlayer === 'X' ? 'O' : 'X';
 
   if (checkWinForPlayer(board, aiPlayer)) return 100;
   if (checkWinForPlayer(board, humanPlayer)) return -100;
@@ -63,11 +75,11 @@ function evaluateBoard(board, aiPlayer) {
 
   // Evaluate each line
   for (const line of WIN_LINES) {
-    let aiCount = 0,
-      humanCount = 0;
+    let aiCount = 0;
+    let humanCount = 0;
     for (const i of line) {
       if (board[i]) {
-        if (board[i].player === aiPlayer) aiCount++;
+        if (board[i]!.player === aiPlayer) aiCount++;
         else humanCount++;
       }
     }
@@ -80,22 +92,22 @@ function evaluateBoard(board, aiPlayer) {
   }
 
   // Prefer center
-  if (board[4] && board[4].player === aiPlayer) score += 3;
+  if (board[4] && board[4]!.player === aiPlayer) score += 3;
 
   return score;
 }
 
 function minimax(
-  board,
-  moveHistory,
-  moveNumber,
-  depth,
-  isMaximizing,
-  alpha,
-  beta,
-  aiPlayer,
-) {
-  const humanPlayer = aiPlayer === PLAYERS.X ? PLAYERS.O : PLAYERS.X;
+  board: (CellState | null)[],
+  moveHistory: Move[],
+  moveNumber: number,
+  depth: number,
+  isMaximizing: boolean,
+  alpha: number,
+  beta: number,
+  aiPlayer: Player,
+): number {
+  const humanPlayer: Player = aiPlayer === 'X' ? 'O' : 'X';
 
   if (checkWinForPlayer(board, aiPlayer)) return 100 - depth;
   if (checkWinForPlayer(board, humanPlayer)) return -100 + depth;
@@ -104,7 +116,7 @@ function minimax(
   const emptyCells = getEmptyCells(board);
   if (emptyCells.length === 0) return 0;
 
-  const currentPlayer = isMaximizing ? aiPlayer : humanPlayer;
+  const currentPlayer: Player = isMaximizing ? aiPlayer : humanPlayer;
 
   if (isMaximizing) {
     let best = -Infinity;
@@ -159,25 +171,25 @@ function minimax(
   }
 }
 
-export function getAIMove(state, difficulty = "medium") {
+export function getAIMove(state: GameState, difficulty: Difficulty = 'medium'): number | null {
   const aiPlayer = state.currentPlayer;
   const emptyCells = getEmptyCells(state.board);
 
   if (emptyCells.length === 0) return null;
 
   switch (difficulty) {
-    case "easy":
+    case 'easy':
       return getEasyMove(state, aiPlayer, emptyCells);
-    case "medium":
+    case 'medium':
       return getMediumMove(state, aiPlayer, emptyCells);
-    case "hard":
+    case 'hard':
       return getHardMove(state, aiPlayer, emptyCells);
     default:
       return getMediumMove(state, aiPlayer, emptyCells);
   }
 }
 
-function getEasyMove(state, aiPlayer, emptyCells) {
+function getEasyMove(state: GameState, aiPlayer: Player, emptyCells: number[]): number {
   // 30% chance of making a smart move
   if (Math.random() < 0.3) {
     return getHardMove(state, aiPlayer, emptyCells);
@@ -186,8 +198,8 @@ function getEasyMove(state, aiPlayer, emptyCells) {
   return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
 
-function getMediumMove(state, aiPlayer, emptyCells) {
-  const humanPlayer = aiPlayer === PLAYERS.X ? PLAYERS.O : PLAYERS.X;
+function getMediumMove(state: GameState, aiPlayer: Player, emptyCells: number[]): number {
+  const humanPlayer: Player = aiPlayer === 'X' ? 'O' : 'X';
 
   // First check for winning move
   for (const cell of emptyCells) {
@@ -225,7 +237,7 @@ function getMediumMove(state, aiPlayer, emptyCells) {
   return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
 
-function getHardMove(state, aiPlayer, emptyCells) {
+function getHardMove(state: GameState, aiPlayer: Player, emptyCells: number[]): number {
   let bestScore = -Infinity;
   let bestMove = emptyCells[0];
 
@@ -257,13 +269,13 @@ function getHardMove(state, aiPlayer, emptyCells) {
   return bestMove;
 }
 
-export function getAIMoveDelay(difficulty) {
+export function getAIMoveDelay(difficulty: Difficulty): number {
   switch (difficulty) {
-    case "easy":
+    case 'easy':
       return 300 + Math.random() * 400;
-    case "medium":
+    case 'medium':
       return 400 + Math.random() * 500;
-    case "hard":
+    case 'hard':
       return 600 + Math.random() * 600;
     default:
       return 500;

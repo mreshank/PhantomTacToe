@@ -2,16 +2,16 @@
    Phantom Tac Toe - Settings Page
    ======================================== */
 
-import { loadData, updateSettings, updateProfile } from "../data/storage.js";
-import { audio } from "../utils/audio.js";
-import { showToast } from "../components/toast.js";
+import { loadData, updateSettings, updateProfile } from "../data/storage";
+import { audio } from "../utils/audio";
+import { showToast } from "../components/toast";
 import {
   iconSettings,
   iconTrash,
   iconHeart,
   iconUser,
   avatarIcons,
-} from "../utils/icons.js";
+} from "../utils/icons";
 import {
   isAuthAvailable,
   isSignedIn,
@@ -19,7 +19,7 @@ import {
   signIn,
   signOut,
   openUserProfile,
-} from "../auth/auth.js";
+} from "../auth/auth";
 
 export function renderSettings(container) {
   const data = loadData();

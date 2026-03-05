@@ -8,10 +8,10 @@ import {
   getXPProgress,
   canClaimDailyReward,
   claimDailyReward,
-} from "../data/storage.js";
-import { getAchievementStatus } from "../rewards/achievements.js";
-import { audio } from "../utils/audio.js";
-import { showToast, showCoinsToast, showXPToast } from "../components/toast.js";
+} from "../data/storage";
+import { getAchievementStatus } from "../rewards/achievements";
+import { audio } from "../utils/audio";
+import { showToast, showCoinsToast, showXPToast } from "../components/toast";
 import {
   iconRewards,
   iconCoin,
@@ -27,7 +27,7 @@ import {
   iconHeart,
   iconBolt,
   avatarIcons,
-} from "../utils/icons.js";
+} from "../utils/icons";
 
 export function renderRewards(container) {
   const data = loadData();

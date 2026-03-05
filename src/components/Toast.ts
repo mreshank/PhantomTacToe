@@ -13,7 +13,7 @@ import {
   iconFire,
   iconClock,
   iconGift,
-} from "../utils/icons.js";
+} from "../utils/icons";
 
 let container = null;
 

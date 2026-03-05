@@ -2,10 +2,10 @@
    Phantom Tac Toe - Friends Page
    ======================================== */
 
-import { loadData } from "../data/storage.js";
-import { router } from "../router.js";
-import { audio } from "../utils/audio.js";
-import { showToast } from "../components/toast.js";
+import { loadData } from "../data/storage";
+import { router } from "../core/Router";
+import { audio } from "../utils/audio";
+import { showToast } from "../components/toast";
 import {
   iconUser,
   iconSearch,
@@ -17,8 +17,8 @@ import {
   iconBolt,
   iconRocket,
   avatarIcons,
-} from "../utils/icons.js";
-import { multiplayer } from "../multiplayer/connection.js";
+} from "../utils/icons";
+import { multiplayer } from "../multiplayer/connection";
 
 let currentView = "list"; // "list" | "search" | "chat"
 let chatTarget = null;
