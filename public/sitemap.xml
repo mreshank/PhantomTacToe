@@ -1,45 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage — Main landing -->
   <url>
     <loc>https://phantomtactoe.mreshank.com/</loc>
-    <lastmod>2026-03-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Play Solo vs AI -->
   <url>
     <loc>https://phantomtactoe.mreshank.com/#/play/solo</loc>
-    <lastmod>2026-03-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
+
+  <!-- Local Duel (Same Device) -->
   <url>
     <loc>https://phantomtactoe.mreshank.com/#/play/local</loc>
-    <lastmod>2026-03-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Online Multiplayer Lobby -->
   <url>
     <loc>https://phantomtactoe.mreshank.com/#/play/online/lobby</loc>
-    <lastmod>2026-03-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Local Multiplayer (WiFi / Offline) Lobby -->
+  <url>
+    <loc>https://phantomtactoe.mreshank.com/#/play/local-network/lobby</loc>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Friends -->
+  <url>
+    <loc>https://phantomtactoe.mreshank.com/#/friends</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Leaderboard -->
+  <url>
+    <loc>https://phantomtactoe.mreshank.com/#/leaderboard</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Rewards -->
   <url>
     <loc>https://phantomtactoe.mreshank.com/#/rewards</loc>
-    <lastmod>2026-03-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  <url>
-    <loc>https://phantomtactoe.mreshank.com/#/leaderboard</loc>
-    <lastmod>2026-03-03</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
+
+  <!-- Settings -->
   <url>
     <loc>https://phantomtactoe.mreshank.com/#/settings</loc>
-    <lastmod>2026-03-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
+    <priority>0.3</priority>
   </url>
 </urlset>
