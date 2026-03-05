@@ -22,8 +22,10 @@ import {
   iconStar,
   iconUser,
 } from "../utils/icons";
+import { api } from "../../convex/_generated/api";
 
-let publicRoomsPollInterval = null;
+let publicRoomsPollInterval: ReturnType<typeof setInterval> | null = null;
+let roomSubscriptionCleanup: (() => void) | null = null;
 
 export function renderOnlineLobby(container) {
   const data = loadData();
@@ -290,16 +292,18 @@ export function renderOnlineLobby(container) {
       loadPublicRooms();
     });
 
-  // Load public rooms initially and poll
+  // Real-time subscription for public rooms (instant updates!)
+  setupRealtimeRoomSubscription();
+  // Also do an initial load
   loadPublicRooms();
-  publicRoomsPollInterval = setInterval(loadPublicRooms, 8000);
 }
 
 async function loadPublicRooms() {
   const listEl = document.getElementById("public-rooms-list");
   if (!listEl) return;
 
-  if (!window.convexClient) {
+  const convex = (window as any).convexClient;
+  if (!convex) {
     listEl.innerHTML = `
       <div style="text-align: center; padding: var(--space-lg); color: var(--text-tertiary)">
         Cloud connection required to see public rooms
@@ -309,68 +313,8 @@ async function loadPublicRooms() {
   }
 
   try {
-    const rooms = await window.convexClient.query("rooms:listPublicRooms");
-
-    if (!rooms.length) {
-      listEl.innerHTML = `
-        <div style="text-align: center; padding: var(--space-lg); color: var(--text-tertiary)">
-          <p>No open rooms right now</p>
-          <p style="font-size: var(--text-xs); margin-top: var(--space-xs)">Create one or use Quick Join!</p>
-        </div>
-      `;
-      return;
-    }
-
-    listEl.innerHTML = rooms
-      .map((room) => {
-        const waitTime = Math.max(
-          0,
-          Math.floor((Date.now() - room.createdAt) / 1000),
-        );
-        const waitStr =
-          waitTime < 60 ? `${waitTime}s` : `${Math.floor(waitTime / 60)}m`;
-
-        return `
-        <div class="card public-room-entry" style="display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); cursor: pointer" data-code="${room.code}">
-          <div class="player-avatar" style="width: 36px; height: 36px; background: var(--bg-tertiary); color: var(--neon-purple)">
-            ${iconUser}
-          </div>
-          <div style="flex: 1; min-width: 0">
-            <div style="font-family: var(--font-display); font-weight: 600">${room.hostName}</div>
-            <div style="font-size: var(--text-xs); color: var(--text-tertiary)">Lv.${room.hostLevel} • Waiting ${waitStr}</div>
-          </div>
-          <button class="btn btn-sm btn-primary btn-join-public" data-code="${room.code}">${iconRocket} Join</button>
-        </div>
-      `;
-      })
-      .join("");
-
-    // Join handlers
-    listEl.querySelectorAll(".btn-join-public").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        audio.playClick();
-        const code = btn.dataset.code;
-        btn.innerHTML = "Joining...";
-        btn.disabled = true;
-
-        try {
-          await multiplayer.joinRoom(code);
-          if (window.convexClient) {
-            window.convexClient
-              .mutation("rooms:joinRoom", { code })
-              .catch(() => {});
-          }
-          showToast("Connected! Starting game...", "check", 2000);
-          cleanupPolling();
-          setTimeout(() => router.navigate("/play/online"), 1000);
-        } catch (err) {
-          showToast("Failed to join room", "alert", 3000);
-          btn.innerHTML = `${iconRocket} Join`;
-          btn.disabled = false;
-        }
-      });
-    });
+    const rooms = await convex.query("rooms:listPublicRooms");
+    renderRoomsList(rooms);
   } catch (err) {
     listEl.innerHTML = `
       <div style="text-align: center; padding: var(--space-lg); color: var(--text-tertiary)">
@@ -401,6 +345,113 @@ function cleanupPolling() {
     clearInterval(publicRoomsPollInterval);
     publicRoomsPollInterval = null;
   }
+  if (roomSubscriptionCleanup) {
+    roomSubscriptionCleanup();
+    roomSubscriptionCleanup = null;
+  }
+}
+
+/**
+ * Setup a real-time subscription to Convex rooms table.
+ * This uses convexClient.onUpdate() which fires immediately whenever
+ * the underlying data changes — no polling delay!
+ */
+function setupRealtimeRoomSubscription() {
+  const convex = (window as any).convexClient;
+  if (!convex) {
+    // No Convex — fall back to slow polling
+    publicRoomsPollInterval = setInterval(loadPublicRooms, 5000);
+    return;
+  }
+
+  try {
+    // Convex onUpdate subscribes to query changes in real-time
+    // Uses the generated API reference for proper type-safe subscription
+    const unsubscribe = convex.onUpdate(
+      api.rooms.listPublicRooms,
+      {},
+      (rooms: any[]) => {
+        renderRoomsList(rooms);
+      }
+    );
+    roomSubscriptionCleanup = typeof unsubscribe === 'function' 
+      ? unsubscribe 
+      : () => unsubscribe?.unsubscribe?.();
+  } catch (err) {
+    // If onUpdate doesn't work, fall back to polling
+    console.warn('Convex real-time subscription failed, falling back to polling:', err);
+    publicRoomsPollInterval = setInterval(loadPublicRooms, 3000);
+  }
+}
+
+/**
+ * Render rooms into the DOM (shared between subscription and manual load)
+ */
+function renderRoomsList(rooms: any[]) {
+  const listEl = document.getElementById("public-rooms-list");
+  if (!listEl) return;
+
+  if (!rooms || !rooms.length) {
+    listEl.innerHTML = `
+      <div style="text-align: center; padding: var(--space-lg); color: var(--text-tertiary)">
+        <p>No open rooms right now</p>
+        <p style="font-size: var(--text-xs); margin-top: var(--space-xs)">Create one or use Quick Join!</p>
+      </div>
+    `;
+    return;
+  }
+
+  listEl.innerHTML = rooms
+    .map((room: any) => {
+      const waitTime = Math.max(
+        0,
+        Math.floor((Date.now() - room.createdAt) / 1000),
+      );
+      const waitStr =
+        waitTime < 60 ? `${waitTime}s` : `${Math.floor(waitTime / 60)}m`;
+
+      return `
+      <div class="card public-room-entry" style="display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); cursor: pointer" data-code="${room.code}">
+        <div class="player-avatar" style="width: 36px; height: 36px; background: var(--bg-tertiary); color: var(--neon-purple)">
+          ${iconUser}
+        </div>
+        <div style="flex: 1; min-width: 0">
+          <div style="font-family: var(--font-display); font-weight: 600">${room.hostName}</div>
+          <div style="font-size: var(--text-xs); color: var(--text-tertiary)">Lv.${room.hostLevel} • Waiting ${waitStr}</div>
+        </div>
+        <button class="btn btn-sm btn-primary btn-join-public" data-code="${room.code}">${iconRocket} Join</button>
+      </div>
+    `;
+    })
+    .join("");
+
+  // Attach join handlers
+  listEl.querySelectorAll<HTMLButtonElement>(".btn-join-public").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      audio.playClick();
+      const code = btn.dataset.code!;
+      btn.innerHTML = "Joining...";
+      btn.disabled = true;
+
+      try {
+        await multiplayer.joinRoom(code);
+        const convex = (window as any).convexClient;
+        if (convex) {
+          convex
+            .mutation("rooms:joinRoom", { code })
+            .catch(() => {});
+        }
+        showToast("Connected! Starting game...", "check", 2000);
+        cleanupPolling();
+        setTimeout(() => router.navigate("/play/online"), 1000);
+      } catch (err) {
+        showToast("Failed to join room", "alert", 3000);
+        btn.innerHTML = `${iconRocket} Join`;
+        btn.disabled = false;
+      }
+    });
+  });
 }
 
 // Auto-join from URL (e.g. #/join/ABC123)
