@@ -4,6 +4,7 @@
 
 import Peer from "peerjs";
 import { generateRoomCode } from "../utils/share";
+import { api } from "../../convex/_generated/api";
 
 const PEERJS_CONFIG = {
   debug: 0,
@@ -29,6 +30,19 @@ export class MultiplayerManager {
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 3;
     this._connectionTimeout = null;
+    this._heartbeatInterval = null;
+    this._lastHeartbeat = 0;
+
+    // Handle tab closes
+    window.addEventListener("beforeunload", () => {
+      if (this.roomCode) {
+        if (this.isHost && (window as any).convexClient) {
+          // Fire and forget room cleanup
+          (window as any).convexClient.mutation(api.rooms.closeRoom, { code: this.roomCode }).catch(() => {});
+        }
+        this.sendDisconnect();
+      }
+    });
   }
 
   async createRoom() {
@@ -113,10 +127,26 @@ export class MultiplayerManager {
       this.reconnectAttempts = 0;
       clearTimeout(this._connectionTimeout);
       console.log("Connected to peer");
+      this._startHeartbeat();
       if (this.onConnected) this.onConnected();
     });
 
     conn.on("data", (data) => {
+      if (data && typeof data === 'object') {
+        if (data.type === "ping") {
+          this.send({ type: "pong" });
+          return;
+        }
+        if (data.type === "pong") {
+          this._lastHeartbeat = Date.now();
+          return;
+        }
+        if (data.type === "disconnect") {
+          console.log("Opponent sent graceful disconnect");
+          this.disconnect();
+          return;
+        }
+      }
       if (this.onMessage) this.onMessage(data);
     });
 
@@ -136,6 +166,29 @@ export class MultiplayerManager {
     if (this.connection && this.connected) {
       this.connection.send(data);
     }
+  }
+
+  sendDisconnect() {
+    this.send({ type: "disconnect" });
+  }
+
+  private _startHeartbeat() {
+    this._lastHeartbeat = Date.now();
+    if (this._heartbeatInterval) clearInterval(this._heartbeatInterval);
+    
+    this._heartbeatInterval = setInterval(() => {
+      if (!this.connected) return;
+      
+      const now = Date.now();
+      // If no pong received for 15 seconds, assume disconnected
+      if (now - this._lastHeartbeat > 15000) {
+        console.warn("Heartbeat timeout - disconnecting");
+        this.disconnect();
+        return;
+      }
+      
+      this.send({ type: "ping" });
+    }, 5000);
   }
 
   sendMove(cellIndex, moveNumber) {
@@ -194,6 +247,13 @@ export class MultiplayerManager {
 
   disconnect() {
     clearTimeout(this._connectionTimeout);
+    if (this._heartbeatInterval) clearInterval(this._heartbeatInterval);
+    
+    // Close room in Convex if host
+    if (this.isHost && this.roomCode && (window as any).convexClient) {
+      (window as any).convexClient.mutation(api.rooms.closeRoom, { code: this.roomCode }).catch(() => {});
+    }
+
     if (this.connection) {
       this.connection.close();
       this.connection = null;

@@ -395,7 +395,7 @@ function handleWin(result: MoveResult, mode: string) {
   });
 
   // Show result modal
-  setTimeout(() => showResultModal(winner, mode), 1200);
+  setTimeout(() => showResultModal(winner, mode, isPlayerWin), 1200);
 
   // Notify opponent of game over (online)
   if (isOnlineGame) {
@@ -503,9 +503,8 @@ function updateTimerUI(remaining: number, total: number) {
   }
 }
 
-function showResultModal(winner: string, mode: string) {
+function showResultModal(winner: string, mode: string, isPlayerWin: boolean) {
   const data = loadData();
-  const isPlayerWin = mode === "solo" ? winner === PLAYERS.X : true;
 
   const overlay = document.createElement("div");
   overlay.className = "modal-overlay";
@@ -707,11 +706,76 @@ function setupOnlineGame() {
   multiplayer.onDisconnected = () => {
     const statusEl = document.getElementById("connection-status");
     if (statusEl) {
-      statusEl.innerHTML = `<span class="icon-xs">${iconWifiOff}</span> Disconnected`;
+      statusEl.innerHTML = `<span class="icon-xs">${iconAlert}</span> Disconnected`;
       statusEl.className = "badge badge-pink";
     }
-    showToast("Opponent disconnected", "alert", 3000);
+
+    // If game is already over, just show a plain toast
+    if (gameState && gameState.phase === PHASES.GAME_OVER) {
+      showToast("Opponent disconnected", "alert", 3000);
+      return;
+    }
+
     interaction.setEnabled(false);
+
+    // Show disconnect modal
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.style.zIndex = "100";
+    overlay.style.backdropFilter = "blur(8px)";
+    overlay.innerHTML = `
+      <div class="modal animate-pop">
+        <div style="margin-bottom: var(--space-md); color: var(--neon-pink)">
+          ${iconAlert}
+        </div>
+        <h2 style="background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Opponent Left
+        </h2>
+        <p>Your opponent has lost connection to the game.</p>
+        
+        <div style="display: flex; gap: var(--space-sm); margin-top: var(--space-lg); flex-direction: column;">
+          <button class="btn btn-primary btn-block" id="btn-claim-win">${iconCheckCircle} Claim Victory</button>
+          <button class="btn btn-secondary btn-block" id="btn-wait-reconnect">Wait (30s)</button>
+          <button class="btn btn-ghost btn-block" id="btn-leave-game">${iconXCircle} Leave Game</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    let waitTimer: ReturnType<typeof setTimeout>;
+
+    document.getElementById("btn-claim-win")?.addEventListener("click", () => {
+      audio.playClick();
+      clearTimeout(waitTimer);
+      overlay.remove();
+      if (gameState) {
+        // Award win to local player
+        gameState.phase = PHASES.GAME_OVER;
+        showResultModal(onlinePlayer, "online", true);
+      }
+    });
+
+    document.getElementById("btn-wait-reconnect")?.addEventListener("click", () => {
+      audio.playClick();
+      overlay.remove();
+      showToast("Waiting for opponent...", "alert", 30000);
+      
+      waitTimer = setTimeout(() => {
+        // Auto-claim win if they don't reconnect
+        if (gameState && gameState.phase !== PHASES.GAME_OVER) {
+           gameState.phase = PHASES.GAME_OVER;
+           showResultModal(onlinePlayer, "online", true);
+        }
+      }, 30000);
+    });
+
+    document.getElementById("btn-leave-game")?.addEventListener("click", () => {
+      audio.playClick();
+      clearTimeout(waitTimer);
+      overlay.remove();
+      window.location.hash = "#/play/online/lobby";
+    });
   };
 }
 

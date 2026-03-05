@@ -90,9 +90,14 @@ export function renderOnlineLobby(container) {
             <span style="color: var(--neon-cyan); animation: pulse-glow 1.5s 0.3s infinite">●</span>
             <span style="color: var(--neon-pink); animation: pulse-glow 1.5s 0.6s infinite">●</span>
           </div>
-          <button class="btn btn-secondary btn-block" id="btn-share-room">
-            ${iconShare} Share Room Link
-          </button>
+          <div style="display: flex; gap: var(--space-sm); flex-direction: column;">
+            <button class="btn btn-secondary btn-block" id="btn-share-room">
+              ${iconShare} Share Room Link
+            </button>
+            <button class="btn btn-ghost btn-block" id="btn-cancel-room" style="color: var(--neon-pink)">
+              ${iconXCircle} Cancel Room
+            </button>
+          </div>
         </div>
 
         <div style="text-align: center; color: var(--text-tertiary); margin: var(--space-lg) 0">— or —</div>
@@ -250,6 +255,28 @@ export function renderOnlineLobby(container) {
     showToast("Link copied!", "check", 2000);
   });
 
+  // Cancel Room
+  document.getElementById("btn-cancel-room")?.addEventListener("click", () => {
+    audio.playClick();
+    const createBtn = document.getElementById("btn-create-room") as HTMLButtonElement;
+    
+    // Cleanup in Convex
+    if (multiplayer.roomCode && window.convexClient) {
+      window.convexClient.mutation(api.rooms.closeRoom, { code: multiplayer.roomCode }).catch(() => {});
+    }
+
+    // Cleanup local connection
+    multiplayer.disconnect();
+
+    // Reset UI
+    document.getElementById("room-created").style.display = "none";
+    createBtn.closest(".card").style.display = "block";
+    createBtn.innerHTML = `${iconDice} Create Room`;
+    createBtn.disabled = false;
+    
+    showToast("Room cancelled", "check", 2000);
+  });
+
   // Join by Code
   document
     .getElementById("btn-join-room")
@@ -296,6 +323,11 @@ export function renderOnlineLobby(container) {
   setupRealtimeRoomSubscription();
   // Also do an initial load
   loadPublicRooms();
+  
+  // Clean up stale rooms from backend
+  if (window.convexClient) {
+    window.convexClient.mutation(api.rooms.cleanupStaleRooms).catch(() => {});
+  }
 }
 
 async function loadPublicRooms() {

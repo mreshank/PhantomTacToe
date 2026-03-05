@@ -32,11 +32,13 @@ export const createRoom = mutation({
 export const listPublicRooms = query({
   args: {},
   handler: async (ctx) => {
+    const staleThreshold = Date.now() - 10 * 60 * 1000;
     const rooms = await ctx.db
       .query("rooms")
       .withIndex("by_status", (q) =>
         q.eq("status", "waiting").eq("isPublic", true),
       )
+      .filter((q) => q.gte(q.field("createdAt"), staleThreshold))
       .collect();
     return rooms.sort((a, b) => a.createdAt - b.createdAt);
   },
@@ -60,11 +62,13 @@ export const joinRoom = mutation({
 export const quickJoin = query({
   args: {},
   handler: async (ctx) => {
+    const staleThreshold = Date.now() - 10 * 60 * 1000;
     const rooms = await ctx.db
       .query("rooms")
       .withIndex("by_status", (q) =>
         q.eq("status", "waiting").eq("isPublic", true),
       )
+      .filter((q) => q.gte(q.field("createdAt"), staleThreshold))
       .collect();
     // Return oldest available room
     if (rooms.length === 0) return null;
@@ -93,5 +97,20 @@ export const getRoomByCode = query({
       .query("rooms")
       .withIndex("by_code", (q) => q.eq("code", args.code))
       .unique();
+  },
+});
+
+export const cleanupStaleRooms = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const staleThreshold = Date.now() - 10 * 60 * 1000;
+    const staleRooms = await ctx.db
+      .query("rooms")
+      .filter((q) => q.lt(q.field("createdAt"), staleThreshold))
+      .collect();
+      
+    for (const room of staleRooms) {
+      await ctx.db.delete(room._id);
+    }
   },
 });
