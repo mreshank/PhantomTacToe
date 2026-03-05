@@ -53,20 +53,37 @@ import {
   iconAlert,
   iconWifi,
   iconWifiOff,
+  iconHeart,
+  avatarIcons,
 } from "../utils/icons";
 
-let gameScene, board, pieceManager, effects, interaction, timer;
-let gameState;
+import type { GameState, MoveResult, GameMode, Difficulty, Player } from "../game/state";
+import type { GameScene as GameSceneType } from "../engine/scene";
+import type { GameBoard as GameBoardType } from "../engine/board";
+import type { PieceManager as PieceManagerType } from "../engine/pieces";
+import type { EffectsManager as EffectsManagerType } from "../engine/effects";
+import type { InteractionHandler as InteractionHandlerType } from "../engine/interaction";
+import type { TurnTimer as TurnTimerType } from "../game/timer";
+
+let gameScene: GameSceneType | null = null;
+let board: GameBoardType | null = null;
+let pieceManager: PieceManagerType | null = null;
+let effects: EffectsManagerType | null = null;
+let interaction: InteractionHandlerType | null = null;
+let timer: TurnTimerType | null = null;
+let gameState: GameState | null = null;
 let aiThinking = false;
 let isOnlineGame = false;
-let onlinePlayer = null; // Which player we are in online mode
+let onlinePlayer: Player | null = null; // Which player we are in online mode
 
-export function renderGame(container, params) {
+export function renderGame(container: HTMLElement, params: Record<string, string>) {
   const mode = params.mode || "local";
   const settings = getSettings();
   const data = loadData();
 
   isOnlineGame = mode === "online";
+  const isLocalNetwork = mode === "local-network";
+  const showReactions = isOnlineGame; // Reactions only in online games
 
   // Guard: if online but not connected, redirect to lobby
   if (isOnlineGame && !multiplayer.connected) {
@@ -91,6 +108,7 @@ export function renderGame(container, params) {
         </div>
         <div class="game-header-actions">
           ${mode === "online" ? `<div class="badge badge-green" id="connection-status"><span class="icon-xs">${iconWifi}</span> Connected</div>` : ""}
+          ${isLocalNetwork ? `<div class="badge badge-green" id="connection-status"><span class="icon-xs">${iconWifi}</span> LAN</div>` : ""}
         </div>
       </div>
 
@@ -99,8 +117,12 @@ export function renderGame(container, params) {
         <!-- Player 1 Panel (Left/Top) -->
         <div class="game-sidebar">
           <div class="player-panel player-x ${gameState.currentPlayer === "X" ? "active" : ""}" id="panel-x">
-            <div class="profile-frame frame-${data.profile.activeFrame || "none"}">
-              <div class="player-avatar" style="background: rgba(255,55,95,0.15); color: var(--neon-pink)">✕</div>
+            <div class="profile-frame frame-${data.cosmetics.activeFrame || "none"}">
+              <div class="player-avatar player-avatar-x" style="background: rgba(255,55,95,0.15); color: var(--neon-pink)">
+                ${data.profile.avatarUrl 
+                  ? `<img src="${data.profile.avatarUrl}" alt="avatar" class="avatar-img" />` 
+                  : `<span class="avatar-symbol">✕</span>`}
+              </div>
             </div>
             <div class="player-info">
               <div class="player-name" id="name-x">${mode === "solo" ? data.profile.name : "Player X"}</div>
@@ -129,12 +151,13 @@ export function renderGame(container, params) {
                   : ""
               }
             </div>
-            <div class="reaction-bar">
+            <div class="reaction-bar" ${!showReactions ? 'style="display:none"' : ''}>
               <button class="reaction-btn" data-reaction="smile" title="Smile">${iconSmile}</button>
               <button class="reaction-btn" data-reaction="fire" title="Fire">${iconFire}</button>
-              <button class="reaction-btn" data-reaction="frown" title="Rage">${iconFrown}</button>
+              <button class="reaction-btn" data-reaction="love" title="Love">${iconHeart}</button>
               <button class="reaction-btn" data-reaction="laugh" title="Laugh">${iconLaugh}</button>
-              <button class="reaction-btn" data-reaction="clap" title="Clap">${iconClap}</button>
+              <button class="reaction-btn" data-reaction="clap" title="GG">${iconClap}</button>
+              <button class="reaction-btn" data-reaction="frown" title="Rage">${iconFrown}</button>
             </div>
           </div>
 
@@ -154,7 +177,11 @@ export function renderGame(container, params) {
         <!-- Player 2 Panel (Right/Bottom) -->
         <div class="game-sidebar">
           <div class="player-panel player-o" id="panel-o">
-            <div class="player-avatar" style="background: rgba(100,210,255,0.15); color: var(--neon-cyan)">○</div>
+            <div class="player-avatar player-avatar-o" style="background: rgba(100,210,255,0.15); color: var(--neon-cyan)">
+              ${mode === "solo" 
+                ? `<span class="avatar-symbol">${iconRobot}</span>`
+                : `<span class="avatar-symbol">○</span>`}
+            </div>
             <div class="player-info">
               <div class="player-name" id="name-o">${mode === "solo" ? `AI Bot <span class="icon-xs">${iconRobot}</span>` : "Player O"}</div>
               <div class="player-score">Score: <span id="score-o">0</span></div>
@@ -221,7 +248,7 @@ export function renderGame(container, params) {
   };
 }
 
-function handleCellClick(cellIndex, mode) {
+function handleCellClick(cellIndex: number, mode: string) {
   if (gameState.phase !== PHASES.PLAYING) return;
   if (aiThinking) return;
 
@@ -234,8 +261,8 @@ function handleCellClick(cellIndex, mode) {
   executeMove(cellIndex, mode);
 }
 
-function executeMove(cellIndex, mode) {
-  const result = makeMove(gameState, cellIndex);
+function executeMove(cellIndex: number, mode: string) {
+  const result: MoveResult = makeMove(gameState!, cellIndex);
   if (!result.valid) return;
 
   const player = result.won
@@ -284,7 +311,7 @@ function executeMove(cellIndex, mode) {
   }
 }
 
-function handleWin(result, mode) {
+function handleWin(result: MoveResult, mode: string) {
   const winner = result.winner;
 
   // Win line
@@ -394,7 +421,7 @@ function scheduleAIMove() {
   }, delay);
 }
 
-function handleTimeout(mode) {
+function handleTimeout(mode: string) {
   // On timeout, make random move
   const validMoves = [];
   for (let i = 0; i < 9; i++) {
@@ -408,7 +435,7 @@ function handleTimeout(mode) {
   }
 }
 
-function handleCellHover(cellIndex) {
+function handleCellHover(cellIndex: number | null) {
   if (gameState.phase !== PHASES.PLAYING) return;
   if (aiThinking) return;
 
@@ -460,7 +487,7 @@ function updateGameUI() {
   if (moveNum) moveNum.textContent = gameState.moveNumber;
 }
 
-function updateTimerUI(remaining, total) {
+function updateTimerUI(remaining: number, total: number) {
   const fill = document.getElementById("timer-fill");
   if (!fill) return;
 
@@ -476,7 +503,7 @@ function updateTimerUI(remaining, total) {
   }
 }
 
-function showResultModal(winner, mode) {
+function showResultModal(winner: string, mode: string) {
   const data = loadData();
   const isPlayerWin = mode === "solo" ? winner === PLAYERS.X : true;
 
@@ -539,7 +566,7 @@ function showResultModal(winner, mode) {
   });
 }
 
-function startRematch(mode) {
+function startRematch(mode: string) {
   resetGame(gameState);
   pieceManager.clearAllPieces();
   board.clearWinLine();
@@ -688,7 +715,7 @@ function setupOnlineGame() {
   };
 }
 
-function updateOpponentName(name, frame = "none") {
+function updateOpponentName(name: string, frame = "none") {
   const nameX = document.getElementById("name-x");
   const nameO = document.getElementById("name-o");
   const panelX = document.getElementById("panel-x");
@@ -711,24 +738,54 @@ function updateOpponentName(name, frame = "none") {
   multiplayer.opponentFrame = frame;
 }
 
-function showFloatingReaction(reactionKey) {
-  const reactionMap = {
+function showFloatingReaction(reactionKey: string): void {
+  const reactionMap: Record<string, string> = {
     smile: iconSmile,
     fire: iconFire,
     frown: iconFrown,
     laugh: iconLaugh,
     clap: iconClap,
+    love: iconHeart,
   };
-  const el = document.createElement("div");
-  el.className = "floating-reaction";
-  el.innerHTML = reactionMap[reactionKey] || iconSmile;
-  el.style.left = `${30 + Math.random() * 40}%`;
-  el.style.top = "60%";
+
+  const colorMap: Record<string, string> = {
+    smile: 'var(--neon-purple)',
+    fire: '#ff9500',
+    frown: 'var(--neon-cyan)',
+    laugh: 'var(--neon-gold)',
+    clap: 'var(--neon-green)',
+    love: 'var(--neon-pink)',
+  };
+
+  const icon = reactionMap[reactionKey] || iconSmile;
+  const color = colorMap[reactionKey] || 'var(--neon-cyan)';
+  const baseLeft = 25 + Math.random() * 50;
+
+  // Main reaction
+  const el = document.createElement('div');
+  el.className = 'floating-reaction';
+  el.innerHTML = icon;
+  el.style.left = `${baseLeft}%`;
+  el.style.top = '55%';
+  el.style.color = color;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1500);
+  setTimeout(() => el.remove(), 2200);
+
+  // Trailing particles (smaller, offset, delayed)
+  for (let i = 0; i < 2; i++) {
+    const trail = document.createElement('div');
+    trail.className = 'floating-reaction trail';
+    trail.innerHTML = icon;
+    trail.style.left = `${baseLeft + (Math.random() - 0.5) * 20}%`;
+    trail.style.top = `${58 + Math.random() * 8}%`;
+    trail.style.color = color;
+    trail.style.animationDelay = `${0.15 + i * 0.2}s`;
+    document.body.appendChild(trail);
+    setTimeout(() => trail.remove(), 2800);
+  }
 }
 
-function setupGameEvents(mode, settings) {
+function setupGameEvents(mode: string, _settings: any) {
   // Back button
   document.getElementById("btn-back")?.addEventListener("click", () => {
     audio.playClick();
@@ -736,10 +793,16 @@ function setupGameEvents(mode, settings) {
     router.navigate("/");
   });
 
-  // Reaction buttons (replaced emoji buttons)
-  document.querySelectorAll(".reaction-btn").forEach((btn) => {
+  // Reaction buttons (online only — with bounce animation)
+  document.querySelectorAll<HTMLElement>(".reaction-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const reaction = btn.dataset.reaction;
+      const reaction = btn.dataset.reaction || 'smile';
+      audio.playClick();
+
+      // Add bounce animation class
+      btn.classList.add('reacting');
+      setTimeout(() => btn.classList.remove('reacting'), 500);
+
       showFloatingReaction(reaction);
       if (isOnlineGame) {
         multiplayer.sendReaction(reaction);

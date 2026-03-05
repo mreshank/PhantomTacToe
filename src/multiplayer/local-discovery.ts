@@ -1,5 +1,5 @@
 /* ========================================
-   Phantom Tac Toe - Local Network Discovery
+   Phantom Tac Toe - Local Multiplayer Discovery
    Manual code-based discovery for same-LAN play
    Works fully offline — no internet required
    ======================================== */
@@ -16,7 +16,7 @@ export interface LocalPeer {
 export type LocalDiscoveryStatus = 'idle' | 'hosting' | 'joining' | 'connected' | 'error';
 
 /**
- * LocalDiscoveryManager handles peer discovery on the same local network.
+ * LocalDiscoveryManager handles peer discovery on the same Local Multiplayer.
  * 
  * Since browsers cannot do mDNS or broadcast UDP, we use a manual signaling approach:
  * 1. Host generates a short room code and creates an RTCPeerConnection

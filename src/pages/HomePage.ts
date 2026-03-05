@@ -23,6 +23,7 @@ import {
   iconSparkle,
   iconMuscle,
   iconRocket,
+  iconWifi,
   avatarIcons,
 } from "../utils/icons";
 
@@ -120,6 +121,12 @@ export function renderHome(container) {
           <div class="mode-title">Local Duel</div>
           <div class="mode-desc">Same device, 2 players</div>
         </button>
+        <button class="mode-card mode-card-lan" data-mode="local-network" id="btn-local-network" style="position: relative; overflow: hidden; border: 1px solid var(--neon-green); grid-column: span 2">
+          <span class="offline-badge">OFFLINE</span>
+          <span class="mode-bg-icon" style="color: var(--neon-green)">${iconWifi}</span>
+          <div class="mode-title">Local Multiplayer</div>
+          <div class="mode-desc">Play with someone on the same WiFi — no internet needed!</div>
+        </button>
       </div>
 
       <!-- Quick Stats -->
@@ -166,6 +173,7 @@ export function renderHome(container) {
   const onlineBtn = document.getElementById("btn-online");
   const quickPlayBtn = document.getElementById("btn-quick-play");
   const claimBtn = document.getElementById("claim-daily-btn");
+  const lanBtn = document.getElementById("btn-local-network");
 
   quickPlayBtn?.addEventListener("click", () => {
     audio.playClick();
@@ -189,6 +197,12 @@ export function renderHome(container) {
     audio.playClick();
     vibrateClick();
     router.navigate("/play/online/lobby");
+  });
+
+  lanBtn?.addEventListener("click", () => {
+    audio.playClick();
+    vibrateClick();
+    router.navigate("/play/local-network/lobby");
   });
 
   claimBtn?.addEventListener("click", () => {
@@ -328,6 +342,29 @@ function addHomeStyles() {
       letter-spacing: 0.1em;
       box-shadow: var(--shadow-neon-purple);
       z-index: 2;
+    }
+    .offline-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      translate: -8px 8px;
+      background: linear-gradient(135deg, var(--neon-green), #1aab48);
+      color: #000;
+      font-size: 10px;
+      font-weight: 800;
+      font-family: var(--font-display);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.1em;
+      box-shadow: 0 0 12px rgba(48, 209, 88, 0.4);
+      z-index: 2;
+    }
+    .mode-card-lan {
+      background: linear-gradient(135deg, rgba(48, 209, 88, 0.08), rgba(10, 10, 26, 0.5));
+    }
+    .mode-card-lan:hover {
+      border-color: var(--neon-green) !important;
+      box-shadow: 0 0 20px rgba(48, 209, 88, 0.3) !important;
     }
     .how-it-works {
       border-color: rgba(255, 214, 10, 0.15);

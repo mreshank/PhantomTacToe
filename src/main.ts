@@ -35,6 +35,7 @@ import { renderRewards } from './pages/RewardsPage';
 import { renderLeaderboard } from './pages/LeaderboardPage';
 import { renderSettings } from './pages/SettingsPage';
 import { renderFriends } from './pages/FriendsPage';
+import { renderLocalNetworkLobby } from './pages/LocalNetworkLobbyPage';
 
 // Initialize Convex as Global Source of Truth
 const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL;
@@ -108,6 +109,10 @@ async function initApp(): Promise<void> {
   router.addRoute('/play/local-network', (c) => {
     updateNav('/play');
     return renderGame(c, { mode: 'local-network' });
+  });
+  router.addRoute('/play/local-network/lobby', (c) => {
+    updateNav('/play');
+    return renderLocalNetworkLobby(c);
   });
   router.addRoute('/join/:code', (c, params) => {
     updateNav('/play');
