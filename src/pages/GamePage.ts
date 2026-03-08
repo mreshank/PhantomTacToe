@@ -617,9 +617,11 @@ function setupOnlineGame() {
   let localReady = false;
   let remoteReady = false;
   let rematchPending = false;
+  let gameStarted = false;
 
   function checkBothReady() {
-    if (localReady && remoteReady) {
+    if (localReady && remoteReady && !gameStarted) {
+      gameStarted = true;
       interaction.setEnabled(true);
       showToast(
         "Game on! " +
@@ -662,6 +664,7 @@ function setupOnlineGame() {
         rematchPending = false;
         localReady = false;
         remoteReady = false;
+        gameStarted = false;
         startRematch("online");
         multiplayer.sendRematchAccept();
         // Re-enter ready flow
@@ -677,6 +680,7 @@ function setupOnlineGame() {
         rematchPending = false;
         localReady = false;
         remoteReady = false;
+        gameStarted = false;
         startRematch("online");
         setTimeout(() => {
           localReady = true;

@@ -4,8 +4,8 @@
    ======================================== */
 
 // Helper to create consistent SVG wrapper
-const svg = (inner, vb = "0 0 24 24", cls = "") =>
-  `<svg class="icon ${cls}" viewBox="${vb}" fill="none" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+const svg = (inner: string, viewBox = "0 0 24 24", className = "") =>
+  `<svg viewBox="${viewBox}" class="icon ${className}">${inner}</svg>`;
 
 // ---- Navigation ---- //
 export const iconSearch = svg(
@@ -208,44 +208,20 @@ export const iconClap = svg(
   `<path d="M12 6V2M8 8l-3-3M16 8l3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 13l-1 7h12l-1-7" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 13V9a3 3 0 016 0v4" stroke="currentColor" stroke-width="2"/>`,
 );
 
-// ---- Avatars (simple geometric icons) ---- //
-const avatarSvg = (inner) => svg(inner, "0 0 24 24", "avatar-icon");
+// ---- Avatars (Premium 3D Portraits) ---- //
+const avatarImg = (name: string) => `<img src="assets/avatars/${name}.png" class="avatar-img" alt="${name}" />`;
 
 export const avatarIcons = [
-  avatarSvg(
-    `<circle cx="12" cy="8" r="5" stroke="currentColor" stroke-width="2"/><path d="M20 21a8 8 0 10-16 0" stroke="currentColor" stroke-width="2"/><line x1="9" y1="8" x2="9" y2="8.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="15" y1="8" x2="15" y2="8.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>`,
-  ), // Cool
-  avatarSvg(
-    `<circle cx="12" cy="8" r="5" stroke="currentColor" stroke-width="2"/><path d="M20 21a8 8 0 10-16 0" stroke="currentColor" stroke-width="2"/><path d="M9.5 7l3-2 3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
-  ), // Cowboy
-  avatarSvg(
-    `<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 8h8M8 14l4 2 4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
-  ), // Ninja
-  avatarSvg(
-    `<path d="M12 2L8 8h8l-4-6zM12 22l-4-6h8l-4 6z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>`,
-  ), // Alien
-  avatarSvg(
-    `<rect x="5" y="6" width="14" height="14" rx="3" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="13" r="1.5" fill="currentColor"/><circle cx="15" cy="13" r="1.5" fill="currentColor"/><line x1="12" y1="2" x2="12" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
-  ), // Robot
-  avatarSvg(
-    `<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94" stroke="currentColor" stroke-width="1.5"/>`,
-  ), // Jack-o
-  avatarSvg(
-    `<circle cx="12" cy="10" r="4" stroke="currentColor" stroke-width="2"/><path d="M6 20c0-4 3-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="2"/><path d="M16 7l3-5M8 7L5 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
-  ), // Fox
-  avatarSvg(
-    `<circle cx="12" cy="10" r="5" stroke="currentColor" stroke-width="2"/><path d="M7 5l-2-3M17 5l2-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M5 20c0-4 3-7 7-7s7 3 7 7" stroke="currentColor" stroke-width="2"/>`,
-  ), // Cat
-  avatarSvg(
-    `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>`,
-  ), // Star
-  avatarSvg(
-    `<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M9 9l2 1M15 9l-2 1M8 15c1 1.5 2.5 2 4 2s3-.5 4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
-  ), // Skull
-  avatarSvg(
-    `<path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>`,
-  ), // Fire
-  avatarSvg(
-    `<ellipse cx="12" cy="12" rx="9" ry="10" stroke="currentColor" stroke-width="2"/><path d="M7 8c1-1 3-1.5 5-1.5s4 .5 5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 12v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="19" r="1" fill="currentColor"/>`,
-  ), // Brain
+  avatarImg("cool"),
+  avatarImg("cowboy"),
+  avatarImg("ninja"),
+  avatarImg("alien"),
+  avatarImg("robot"),
+  avatarImg("jacko"),
+  avatarImg("fox"),
+  avatarImg("cat"),
+  avatarImg("star"),
+  avatarImg("skull"),
+  avatarImg("fire"),
+  avatarImg("brain"),
 ];

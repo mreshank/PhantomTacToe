@@ -17,10 +17,8 @@ import {
   iconCoin,
   iconGift,
   iconFire,
-  iconCheckCircle,
-  iconSparkle,
-  iconShoppingBag,
   iconCheck,
+  iconSparkle,
   iconDiamond,
   iconStar,
   iconTarget,
@@ -29,14 +27,14 @@ import {
   avatarIcons,
 } from "../utils/icons";
 
-export function renderRewards(container) {
+export function renderRewards(container: HTMLElement) {
   const data = loadData();
   const xp = getXPProgress();
   const achievements = getAchievementStatus();
   const canClaim = canClaimDailyReward();
 
   // Defensive defaults for cosmetics
-  if (!data.cosmetics) data.cosmetics = {};
+  if (!data.cosmetics) data.cosmetics = {} as any;
   if (!data.cosmetics.unlockedThemes) data.cosmetics.unlockedThemes = ["neon"];
   if (!data.cosmetics.unlockedFrames) data.cosmetics.unlockedFrames = ["none"];
 
@@ -45,17 +43,7 @@ export function renderRewards(container) {
   // Use numeric avatar index from profile
   const avatarIdx =
     typeof data.profile.avatar === "number" ? data.profile.avatar : 0;
-  const avatarSvg = avatarIcons[avatarIdx] || avatarIcons[0];
-
-  // Shop theme icons
-  const shopIcons = {
-    neon: `<span style="color:var(--neon-purple)">${iconDiamond}</span>`,
-    retro: `<span style="color:var(--neon-cyan)">${iconTarget}</span>`,
-    galaxy: `<span style="color:var(--neon-pink)">${iconStar}</span>`,
-    minimal: `<span style="color:var(--text-secondary)">${iconTarget}</span>`,
-    fire: `<span style="color:var(--neon-gold)">${iconFire}</span>`,
-    crystal: `<span style="color:var(--neon-cyan)">${iconDiamond}</span>`,
-  };
+  const avatarImgHtml = avatarIcons[avatarIdx] || avatarIcons[0];
 
   container.innerHTML = `
     <div class="page rewards-page">
@@ -66,7 +54,9 @@ export function renderRewards(container) {
       <!-- Level Progress -->
       <div class="card" style="margin-bottom: var(--space-xl)">
         <div style="display: flex; align-items: center; gap: var(--space-lg); margin-bottom: var(--space-md)">
-          <div style="width:48px;height:48px;color:var(--neon-purple)">${avatarSvg}</div>
+          <div style="width:48px;height:48px;color:var(--neon-purple); border-radius: 50%; overflow: hidden; background: var(--bg-tertiary)">
+            ${avatarImgHtml}
+          </div>
           <div style="flex: 1">
             <div style="font-family: var(--font-display); font-weight: 700; font-size: var(--text-xl)">
               Level ${xp.level}
@@ -206,13 +196,13 @@ export function renderRewards(container) {
   // Purchase listeners
   container.querySelectorAll(".shop-item-horizontal").forEach((item) => {
     item.addEventListener("click", () => {
-      const { purchase, id, price } = item.dataset;
-      const numPrice = parseInt(price);
+      const { purchase, id, price } = (item as HTMLElement).dataset;
+      const numPrice = parseInt(price || "0");
 
       const isUnlocked =
         purchase === "theme"
-          ? data.cosmetics.unlockedThemes.includes(id)
-          : data.cosmetics.unlockedFrames.includes(id);
+          ? data.cosmetics.unlockedThemes.includes(id as string)
+          : data.cosmetics.unlockedFrames.includes(id as string);
 
       if (isUnlocked) {
         showToast("Already unlocked! Equip in Settings.", "check");
@@ -221,8 +211,8 @@ export function renderRewards(container) {
 
       if (data.profile.coins >= numPrice) {
         data.profile.coins -= numPrice;
-        if (purchase === "theme") data.cosmetics.unlockedThemes.push(id);
-        if (purchase === "frame") data.cosmetics.unlockedFrames.push(id);
+        if (purchase === "theme" && id) data.cosmetics.unlockedThemes.push(id);
+        if (purchase === "frame" && id) data.cosmetics.unlockedFrames.push(id);
 
         saveData(data);
         audio.playCoins();

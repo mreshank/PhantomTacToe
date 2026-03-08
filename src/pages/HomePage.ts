@@ -27,7 +27,7 @@ import {
   avatarIcons,
 } from "../utils/icons";
 
-export function renderHome(container) {
+export function renderHome(container: HTMLElement) {
   const data = loadData();
   const xp = getXPProgress();
   const canClaim = canClaimDailyReward();
@@ -50,7 +50,11 @@ export function renderHome(container) {
 
       <!-- Player Stats Bar -->
       <div class="home-stats-bar card">
-        <div class="home-avatar">${avatarSvg}</div>
+        <div class="profile-frame frame-${data.profile.activeFrame || "none"}" style="border-radius: 50%">
+          <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple); border-radius: 50%; overflow: hidden">
+            ${avatarIcons[avatarIdx % avatarIcons.length]}
+          </div>
+        </div>
         <div class="home-player-info">
           <div class="home-player-name">${data.profile.name}</div>
           <div class="home-level-row">

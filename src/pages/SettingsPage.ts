@@ -21,12 +21,12 @@ import {
   openUserProfile,
 } from "../auth/auth";
 
-export function renderSettings(container) {
+export function renderSettings(container: HTMLElement) {
   const data = loadData();
   const settings = data.settings;
 
   // Defensive defaults for cosmetics (old localStorage may not have these)
-  if (!data.cosmetics) data.cosmetics = {};
+  if (!data.cosmetics) data.cosmetics = {} as any;
   if (!data.cosmetics.unlockedThemes) data.cosmetics.unlockedThemes = ["neon"];
   if (!data.cosmetics.unlockedFrames) data.cosmetics.unlockedFrames = ["none"];
   if (!data.cosmetics.activeTheme) data.cosmetics.activeTheme = "neon";
@@ -109,15 +109,18 @@ export function renderSettings(container) {
           <div class="avatar-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-sm)">
             ${avatarIcons
               .map(
-                (svg, i) => `
+                (img, i) => `
               <button class="avatar-pick-btn ${i === currentAvatarIdx ? "active" : ""}" data-avatar-index="${i}"
                 title="${avatarLabels[i]}"
                 style="${i === currentAvatarIdx ? "border: 2px solid var(--neon-purple); box-shadow: var(--shadow-neon-purple)" : ""}">
-                ${svg}
+                ${img}
               </button>
             `,
               )
               .join("")}
+            <button class="avatar-pick-btn" id="btn-random-avatar" title="Randomize Avatar" style="background: rgba(191, 90, 242, 0.1); border: 1px dashed var(--neon-purple); color: var(--neon-purple)">
+              <span style="font-size: 20px; font-weight: bold; line-height: 1">?</span>
+            </button>
           </div>
         </div>
       </div>
@@ -236,24 +239,33 @@ export function renderSettings(container) {
   addSettingsStyles();
 
   // Events
-  document.getElementById("player-name")?.addEventListener("change", (e) => {
-    updateProfile({ name: e.target.value.trim() || "Player" });
+  document.getElementById("player-name")?.addEventListener("change", (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    updateProfile({ name: target.value.trim() || "Player" });
     showToast("Name updated!", "check", 1500);
   });
 
-  document.querySelectorAll(".avatar-pick-btn").forEach((btn) => {
+  document.querySelectorAll(".avatar-pick-btn[data-avatar-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".avatar-pick-btn").forEach((b) => {
         b.classList.remove("active");
-        b.style.border = "";
-        b.style.boxShadow = "";
+        (b as HTMLElement).style.border = "";
+        (b as HTMLElement).style.boxShadow = "";
       });
       btn.classList.add("active");
-      btn.style.border = "2px solid var(--neon-purple)";
-      btn.style.boxShadow = "var(--shadow-neon-purple)";
-      updateProfile({ avatar: parseInt(btn.dataset.avatarIndex, 10) });
+      (btn as HTMLElement).style.border = "2px solid var(--neon-purple)";
+      (btn as HTMLElement).style.boxShadow = "var(--shadow-neon-purple)";
+      updateProfile({ avatar: parseInt((btn as HTMLElement).dataset.avatarIndex!, 10) });
       audio.playClick();
     });
+  });
+
+  document.getElementById("btn-random-avatar")?.addEventListener("click", () => {
+    const randomIdx = Math.floor(Math.random() * avatarIcons.length);
+    const btns = document.querySelectorAll(".avatar-pick-btn[data-avatar-index]");
+    const targetBtn = btns[randomIdx] as HTMLElement;
+    targetBtn.click();
+    showToast("Random avatar selected!", "dice");
   });
 
   // Theme selection
@@ -306,14 +318,16 @@ export function renderSettings(container) {
       openUserProfile();
     });
 
-  document.getElementById("sound-toggle")?.addEventListener("change", (e) => {
-    updateSettings({ soundEnabled: e.target.checked });
-    audio.setEnabled(e.target.checked);
+  document.getElementById("sound-toggle")?.addEventListener("change", (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    updateSettings({ soundEnabled: target.checked });
+    audio.setEnabled(target.checked);
   });
 
-  document.getElementById("music-toggle")?.addEventListener("change", (e) => {
-    updateSettings({ musicEnabled: e.target.checked });
-    audio.setMusicEnabled(e.target.checked);
+  document.getElementById("music-toggle")?.addEventListener("change", (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    updateSettings({ musicEnabled: target.checked });
+    audio.setMusicEnabled(target.checked);
   });
 
   document.querySelectorAll(".difficulty-option").forEach((opt) => {
@@ -327,22 +341,23 @@ export function renderSettings(container) {
     });
   });
 
-  document.getElementById("timer-toggle")?.addEventListener("change", (e) => {
-    updateSettings({ timerEnabled: e.target.checked });
-    document.getElementById("timer-duration-row").style.display = e.target
-      .checked
-      ? "flex"
-      : "none";
+  document.getElementById("timer-toggle")?.addEventListener("change", (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    updateSettings({ timerEnabled: target.checked });
+    const durationRow = document.getElementById("timer-duration-row");
+    if (durationRow) durationRow.style.display = target.checked ? "flex" : "none";
   });
 
-  document.getElementById("timer-duration")?.addEventListener("change", (e) => {
-    updateSettings({ timerDuration: parseInt(e.target.value) });
+  document.getElementById("timer-duration")?.addEventListener("change", (e: Event) => {
+    const target = e.target as HTMLSelectElement;
+    updateSettings({ timerDuration: parseInt(target.value) });
   });
 
   document
     .getElementById("particles-toggle")
-    ?.addEventListener("change", (e) => {
-      updateSettings({ particlesEnabled: e.target.checked });
+    ?.addEventListener("change", (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      updateSettings({ particlesEnabled: target.checked });
     });
 
   document.getElementById("btn-reset")?.addEventListener("click", () => {
@@ -417,6 +432,13 @@ function addSettingsStyles() {
     }
     .avatar-pick-btn.active {
       color: var(--neon-purple);
+      transform: scale(1.05);
+    }
+    .avatar-pick-btn .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
     }
     .avatar-pick-btn .icon {
       width: 100%;

@@ -20,6 +20,7 @@ export interface Profile {
   coins: number;
   createdAt: number | null;
   activeTheme?: string;
+  activeFrame?: string;
 }
 
 export interface Stats {

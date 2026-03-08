@@ -11,19 +11,17 @@ import {
   iconSearch,
   iconCheck,
   iconXCircle,
-  iconStar,
-  iconGlobe,
   iconHeart,
+  iconGlobe,
   iconBolt,
   iconRocket,
   avatarIcons,
 } from "../utils/icons";
 import { multiplayer } from "../multiplayer/connection";
 
-let currentView = "list"; // "list" | "search" | "chat"
-let chatTarget = null;
+let chatTarget: string | null = null;
 
-export async function renderFriends(container) {
+export async function renderFriends(container: HTMLElement) {
   const data = loadData();
   const clerkId = data.profile.clerkUserId;
 
@@ -106,8 +104,8 @@ export async function renderFriends(container) {
   await loadFriendsData(clerkId, container);
 
   // Search
-  const searchInput = document.getElementById("friend-search");
-  const searchBtn = document.getElementById("btn-search-go");
+  const searchInput = document.getElementById("friend-search") as HTMLInputElement;
+  const searchBtn = document.getElementById("btn-search-go") as HTMLButtonElement;
 
   searchBtn?.addEventListener("click", () => {
     const q = searchInput.value.trim();
@@ -122,11 +120,13 @@ export async function renderFriends(container) {
   });
 
   document.getElementById("btn-close-search")?.addEventListener("click", () => {
-    document.getElementById("search-results").style.display = "none";
+    const results = document.getElementById("search-results");
+    if (results) results.style.display = "none";
   });
 
   document.getElementById("btn-close-chat")?.addEventListener("click", () => {
-    document.getElementById("chat-panel").style.display = "none";
+    const chat = document.getElementById("chat-panel");
+    if (chat) chat.style.display = "none";
     chatTarget = null;
   });
 
@@ -139,9 +139,12 @@ export async function renderFriends(container) {
   });
 }
 
-async function loadFriendsData(clerkId, container) {
-  if (!window.convexClient) {
-    document.getElementById("friends-list").innerHTML = `
+async function loadFriendsData(clerkId: string, container: HTMLElement) {
+  const fl = document.getElementById("friends-list");
+  if (!fl) return;
+
+  if (!(window as any).convexClient) {
+    fl.innerHTML = `
       <div style="text-align: center; padding: var(--space-2xl); color: var(--text-tertiary)">
         Cloud connection required to view friends.
       </div>
@@ -151,20 +154,20 @@ async function loadFriendsData(clerkId, container) {
 
   try {
     // Load friends
-    const friends = await window.convexClient.query("friends:getFriends", {
+    const friends: any[] = await (window as any).convexClient.query("friends:getFriends", {
       clerkId,
     });
     renderFriendsList(friends, clerkId);
 
     // Load pending requests
-    const pending = await window.convexClient.query(
+    const pending: any[] = await (window as any).convexClient.query(
       "friends:getPendingRequests",
       { clerkId },
     );
     renderPendingRequests(pending, clerkId);
   } catch (err) {
     console.error("Failed to load friends:", err);
-    document.getElementById("friends-list").innerHTML = `
+    fl.innerHTML = `
       <div style="text-align: center; padding: var(--space-2xl); color: var(--text-tertiary)">
         Failed to load friends. Make sure Convex is running.
       </div>
@@ -172,8 +175,10 @@ async function loadFriendsData(clerkId, container) {
   }
 }
 
-function renderFriendsList(friends, myClerkId) {
-  const listEl = document.getElementById("friends-list");
+function renderFriendsList(friends: any[], myClerkId: string) {
+  const listEl = document.getElementById("friends-list") as HTMLElement;
+  if (!listEl) return;
+
   if (!friends.length) {
     listEl.innerHTML = `
       <div style="text-align: center; padding: var(--space-2xl); color: var(--text-tertiary)">
@@ -188,8 +193,8 @@ function renderFriendsList(friends, myClerkId) {
     .map(
       (f) => `
     <div class="friend-entry card" data-clerk-id="${f.clerkId}">
-      <div class="profile-frame frame-${f.activeFrame || "none"}">
-        <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple)">
+      <div class="profile-frame frame-${f.activeFrame || "none"}" style="border-radius: 50%">
+        <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple); border-radius: 50%; overflow: hidden">
           ${avatarIcons[f.avatarIndex || 0]}
         </div>
       </div>
@@ -213,7 +218,8 @@ function renderFriendsList(friends, myClerkId) {
   listEl.querySelectorAll(".btn-chat").forEach((btn) => {
     btn.addEventListener("click", () => {
       audio.playClick();
-      openChat(btn.dataset.id, btn.dataset.name, myClerkId);
+      const { id, name } = (btn as HTMLElement).dataset;
+      if (id && name) openChat(id, name, myClerkId);
     });
   });
 
@@ -222,14 +228,16 @@ function renderFriendsList(friends, myClerkId) {
     btn.addEventListener("click", async () => {
       audio.playClick();
       try {
+        const { id, name } = (btn as HTMLElement).dataset;
+        if (!id) return;
         const code = await multiplayer.createRoom();
-        await window.convexClient.mutation("messages:inviteToMatch", {
+        await (window as any).convexClient.mutation("messages:inviteToMatch", {
           fromClerkId: myClerkId,
-          toClerkId: btn.dataset.id,
+          toClerkId: id,
           roomCode: code,
           fromName: loadData().profile.name,
         });
-        showToast(`Invite sent to ${btn.dataset.name}!`, "check");
+        showToast(`Invite sent to ${name}!`, "check");
         router.navigate("/play/online");
       } catch (err) {
         showToast("Failed to create invite", "alert");
@@ -238,10 +246,12 @@ function renderFriendsList(friends, myClerkId) {
   });
 }
 
-function renderPendingRequests(requests, myClerkId) {
-  const section = document.getElementById("pending-section");
-  const listEl = document.getElementById("pending-list");
-  const countEl = document.getElementById("pending-count");
+function renderPendingRequests(requests: any[], myClerkId: string) {
+  const section = document.getElementById("pending-section") as HTMLElement;
+  const listEl = document.getElementById("pending-list") as HTMLElement;
+  const countEl = document.getElementById("pending-count") as HTMLElement;
+
+  if (!section || !listEl || !countEl) return;
 
   if (!requests.length) {
     section.style.display = "none";
@@ -249,14 +259,14 @@ function renderPendingRequests(requests, myClerkId) {
   }
 
   section.style.display = "block";
-  countEl.textContent = requests.length;
+  countEl.textContent = requests.length.toString();
 
   listEl.innerHTML = requests
     .map(
       (r) => `
     <div class="friend-entry card">
-      <div class="player-avatar" style="width: 36px; height: 36px; background: var(--bg-tertiary); color: var(--neon-purple)">
-        ${iconUser}
+      <div class="player-avatar" style="width: 36px; height: 36px; background: var(--bg-tertiary); color: var(--neon-purple); border-radius: 50%; overflow: hidden">
+        ${avatarIcons[r.fromAvatarIndex || 0]}
       </div>
       <div style="flex: 1">
         <div style="font-family: var(--font-display); font-weight: 600">${r.fromName}</div>
@@ -273,15 +283,13 @@ function renderPendingRequests(requests, myClerkId) {
     btn.addEventListener("click", async () => {
       audio.playClick();
       try {
-        await window.convexClient.mutation("friends:acceptFriendRequest", {
-          requestId: btn.dataset.id,
+        const rid = (btn as HTMLElement).dataset.id;
+        await (window as any).convexClient.mutation("friends:acceptFriendRequest", {
+          requestId: rid,
         });
         showToast("Friend added!", "check");
-        renderFriends(
-          document
-            .getElementById("page-container")
-            ?.closest("#page-container") || btn.closest(".page").parentElement,
-        );
+        const pc = document.getElementById("page-container");
+        if (pc) renderFriends(pc);
       } catch (err) {
         showToast("Failed to accept", "alert");
       }
@@ -292,10 +300,11 @@ function renderPendingRequests(requests, myClerkId) {
     btn.addEventListener("click", async () => {
       audio.playClick();
       try {
-        await window.convexClient.mutation("friends:declineFriendRequest", {
-          requestId: btn.dataset.id,
+        const rid = (btn as HTMLElement).dataset.id;
+        await (window as any).convexClient.mutation("friends:declineFriendRequest", {
+          requestId: rid,
         });
-        btn.closest(".friend-entry").remove();
+        (btn.closest(".friend-entry") as HTMLElement).remove();
       } catch (err) {
         showToast("Failed", "alert");
       }
@@ -303,19 +312,21 @@ function renderPendingRequests(requests, myClerkId) {
   });
 }
 
-async function doSearch(query, myClerkId) {
-  if (!window.convexClient) {
+async function doSearch(query: string, myClerkId: string) {
+  if (!(window as any).convexClient) {
     showToast("Cloud connection required", "alert");
     return;
   }
 
-  const resultsSection = document.getElementById("search-results");
-  const searchList = document.getElementById("search-list");
+  const resultsSection = document.getElementById("search-results") as HTMLElement;
+  const searchList = document.getElementById("search-list") as HTMLElement;
+  if (!resultsSection || !searchList) return;
+
   resultsSection.style.display = "block";
   searchList.innerHTML = `<div style="text-align: center; color: var(--text-tertiary); padding: var(--space-md)">Searching...</div>`;
 
   try {
-    const results = await window.convexClient.query("friends:searchUsers", {
+    const results: any[] = await (window as any).convexClient.query("friends:searchUsers", {
       query,
       myClerkId,
     });
@@ -329,7 +340,7 @@ async function doSearch(query, myClerkId) {
       .map(
         (u) => `
       <div class="friend-entry card">
-        <div class="player-avatar" style="width: 36px; height: 36px; background: var(--bg-tertiary); color: var(--neon-purple)">
+        <div class="player-avatar" style="width: 36px; height: 36px; background: var(--bg-tertiary); color: var(--neon-purple); border-radius: 50%; overflow: hidden">
           ${avatarIcons[u.avatarIndex || 0]}
         </div>
         <div style="flex: 1">
@@ -346,11 +357,12 @@ async function doSearch(query, myClerkId) {
       btn.addEventListener("click", async () => {
         audio.playClick();
         try {
-          const result = await window.convexClient.mutation(
+          const tid = (btn as HTMLElement).dataset.id;
+          const result = await (window as any).convexClient.mutation(
             "friends:sendFriendRequest",
             {
               fromClerkId: myClerkId,
-              toClerkId: btn.dataset.id,
+              toClerkId: tid,
               fromName: loadData().profile.name,
             },
           );
@@ -359,9 +371,9 @@ async function doSearch(query, myClerkId) {
           } else {
             showToast("Friend request sent!", "check");
           }
-          btn.textContent = "Sent ✓";
-          btn.disabled = true;
-        } catch (err) {
+          (btn as HTMLButtonElement).textContent = "Sent ✓";
+          (btn as HTMLButtonElement).disabled = true;
+        } catch (err: any) {
           showToast(err.message || "Failed to send request", "alert");
         }
       });
@@ -371,20 +383,22 @@ async function doSearch(query, myClerkId) {
   }
 }
 
-async function openChat(targetClerkId, targetName, myClerkId) {
+async function openChat(targetClerkId: string, targetName: string, myClerkId: string) {
   chatTarget = targetClerkId;
-  const panel = document.getElementById("chat-panel");
-  const nameEl = document.getElementById("chat-target-name");
-  const messagesEl = document.getElementById("chat-messages");
+  const panel = document.getElementById("chat-panel") as HTMLElement;
+  const nameEl = document.getElementById("chat-target-name") as HTMLElement;
+  const messagesEl = document.getElementById("chat-messages") as HTMLElement;
+
+  if (!panel || !nameEl || !messagesEl) return;
 
   panel.style.display = "block";
   nameEl.textContent = `Chat with ${targetName}`;
   messagesEl.innerHTML = `<div style="text-align: center; color: var(--text-tertiary)">Loading...</div>`;
 
-  if (!window.convexClient) return;
+  if (!(window as any).convexClient) return;
 
   try {
-    const messages = await window.convexClient.query(
+    const messages: any[] = await (window as any).convexClient.query(
       "messages:getConversation",
       {
         clerkId1: myClerkId,
@@ -417,8 +431,11 @@ async function openChat(targetClerkId, targetName, myClerkId) {
       btn.addEventListener("click", async () => {
         audio.playClick();
         try {
-          await multiplayer.joinRoom(btn.dataset.code);
-          router.navigate("/play/online");
+          const code = (btn as HTMLElement).dataset.code;
+          if (code) {
+             await multiplayer.joinRoom(code);
+             router.navigate("/play/online");
+          }
         } catch (err) {
           showToast("Room not found or expired", "alert");
         }
@@ -429,21 +446,21 @@ async function openChat(targetClerkId, targetName, myClerkId) {
   }
 }
 
-async function sendChatMessage(myClerkId) {
-  const input = document.getElementById("chat-input");
+async function sendChatMessage(myClerkId: string) {
+  const input = document.getElementById("chat-input") as HTMLInputElement;
   const text = input.value.trim();
-  if (!text || !chatTarget || !window.convexClient) return;
+  if (!text || !chatTarget || !(window as any).convexClient) return;
 
   input.value = "";
   try {
-    await window.convexClient.mutation("messages:sendMessage", {
+    await (window as any).convexClient.mutation("messages:sendMessage", {
       fromClerkId: myClerkId,
       toClerkId: chatTarget,
       text,
     });
     // Re-load chat
     const nameEl = document.getElementById("chat-target-name");
-    const targetName = nameEl.textContent.replace("Chat with ", "");
+    const targetName = nameEl?.textContent?.replace("Chat with ", "") || "";
     openChat(chatTarget, targetName, myClerkId);
   } catch (err) {
     showToast("Failed to send message", "alert");

@@ -16,7 +16,7 @@ import {
   avatarIcons,
 } from "../utils/icons";
 
-export async function renderLeaderboard(container) {
+export async function renderLeaderboard(container: HTMLElement) {
   const data = loadData();
   let currentTab = "circle";
   let leaderboardData = [];
@@ -50,39 +50,39 @@ export async function renderLeaderboard(container) {
     // Tab switching
     container.querySelectorAll(".tab").forEach((tab) => {
       tab.addEventListener("click", async () => {
-        const tabType = tab.dataset.tab;
-        if (tabType === currentTab) return;
+        const tabType = (tab as HTMLElement).dataset.tab;
+        if (!tabType || tabType === currentTab) return;
         currentTab = tabType;
         updateView();
       });
     });
   }
 
-  async function loadCircleData(data) {
-    const content = container.querySelector("#leaderboard-content");
+  async function loadCircleData(data: any) {
+    const content = container.querySelector("#leaderboard-content") as HTMLElement;
     const clerkId = data.profile.clerkUserId;
 
-    if (!clerkId || !window.convexClient) {
-      content.innerHTML = renderEmptyState("circle");
+    if (!clerkId || !(window as any).convexClient) {
+      if (content) content.innerHTML = renderEmptyState("circle");
       return;
     }
 
     try {
       // Get friends data
-      const friends = await window.convexClient.query("friends:getFriends", {
+      const friends: any[] = await (window as any).convexClient.query("friends:getFriends", {
         clerkId,
       });
 
       // Get recent opponents from local storage
       const recentOpponents = data.recentOpponents || [];
       const recentIds = recentOpponents
-        .map((o) => o.clerkId)
-        .filter((id) => id && !friends.some((f) => f.clerkId === id));
+        .map((o: any) => o.clerkId)
+        .filter((id: string) => id && !friends.some((f: any) => f.clerkId === id));
 
-      let recentUsers = [];
+      let recentUsers: any[] = [];
       if (recentIds.length > 0) {
         try {
-          recentUsers = await window.convexClient.query("users:getUsersByIds", {
+          recentUsers = await (window as any).convexClient.query("users:getUsersByIds", {
             clerkIds: recentIds,
           });
         } catch (e) {
@@ -136,26 +136,26 @@ export async function renderLeaderboard(container) {
       // Sort by wins
       circleEntries.sort((a, b) => b.score - a.score);
 
-      content.innerHTML = renderList(circleEntries, "circle", data);
+      if (content) content.innerHTML = renderList(circleEntries, "circle", data);
     } catch (err) {
       console.error("Failed to load circle data:", err);
-      content.innerHTML = renderEmptyState("circle");
+      if (content) content.innerHTML = renderEmptyState("circle");
     }
   }
 
-  async function loadGlobalData(data) {
-    const content = container.querySelector("#leaderboard-content");
+  async function loadGlobalData(data: any) {
+    const content = container.querySelector("#leaderboard-content") as HTMLElement;
 
-    if (!window.convexClient) {
-      content.innerHTML = renderEmptyState("global");
+    if (!(window as any).convexClient) {
+      if (content) content.innerHTML = renderEmptyState("global");
       return;
     }
 
     try {
-      const globalData = await window.convexClient.query(
+      const globalData: any[] = await (window as any).convexClient.query(
         "leaderboard:getGlobalLeaderboard",
       );
-      const entries = globalData.map((u) => ({
+      const entries = globalData.map((u: any) => ({
         name: u.name,
         score: u.wins,
         streak: u.bestStreak,
@@ -163,15 +163,15 @@ export async function renderLeaderboard(container) {
         avatarIndex: u.avatarIndex || 0,
         isGlobal: true,
       }));
-      content.innerHTML = renderList(entries, "global", data);
+      if (content) content.innerHTML = renderList(entries, "global", data);
     } catch (err) {
       console.error("Failed to fetch global leaderboard:", err);
       showToast("Failed to load global scores", "alert");
-      content.innerHTML = renderEmptyState("global");
+      if (content) content.innerHTML = renderEmptyState("global");
     }
   }
 
-  function renderEmptyState(type) {
+  function renderEmptyState(type: string) {
     return `
       <div style="text-align: center; padding: var(--space-3xl); color: var(--text-tertiary)">
         <div class="icon-lg" style="margin-bottom: var(--space-md); color: var(--neon-gold)">${iconTrophy}</div>
@@ -183,7 +183,7 @@ export async function renderLeaderboard(container) {
     `;
   }
 
-  function renderList(list, type, data) {
+  function renderList(list: any[], type: string, data: any) {
     if (list.length === 0) return renderEmptyState(type);
 
     return `
@@ -191,11 +191,11 @@ export async function renderLeaderboard(container) {
         ${list
           .slice(0, 50)
           .map(
-            (entry, i) => `
+            (entry: any, i: number) => `
           <div class="leaderboard-entry ${entry.isSelf ? "card-glow" : ""}" style="animation: slideInUp 0.4s ease ${i * 30}ms both">
             <div class="leaderboard-rank">${getRankDisplay(i + 1)}</div>
-            <div class="profile-frame frame-${entry.activeFrame || "none"}">
-              <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple)">
+            <div class="profile-frame frame-${entry.activeFrame || "none"}" style="border-radius: 50%">
+              <div class="player-avatar" style="width: 40px; height: 40px; background: var(--bg-tertiary); color: var(--neon-purple); border-radius: 50%; overflow: hidden">
                 ${avatarIcons[entry.avatarIndex % avatarIcons.length]}
               </div>
             </div>
@@ -226,7 +226,7 @@ export async function renderLeaderboard(container) {
   await updateView();
 }
 
-function getRankDisplay(rank) {
+function getRankDisplay(rank: number) {
   switch (rank) {
     case 1:
       return `<span class="icon-rank" style="color:var(--neon-gold)">${iconCrown}</span>`;
