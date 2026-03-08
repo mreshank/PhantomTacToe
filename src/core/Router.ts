@@ -16,6 +16,7 @@ export class Router {
   private currentRoute: string | null = null;
   private currentCleanup: (() => void) | null = null;
   private appContainer: HTMLElement | null = null;
+  private isNavigating: boolean = false;
 
   constructor() {
     window.addEventListener('hashchange', () => this.handleRoute());
@@ -37,49 +38,58 @@ export class Router {
     return this.currentRoute;
   }
 
-  handleRoute(): void {
-    const hash = window.location.hash.slice(1) || '/';
+  async handleRoute(): Promise<void> {
+    if (this.isNavigating) return;
+    this.isNavigating = true;
 
-    // Match route (supports params like /join/:code)
-    let matchedHandler: RouteHandler | null = null;
-    let params: RouteParams = {};
+    try {
+      const hash = window.location.hash.slice(1) || '/';
 
-    for (const [pattern, handler] of this.routes) {
-      const match = this.matchRoute(pattern, hash);
-      if (match) {
-        matchedHandler = handler;
-        params = match;
-        break;
+      // Match route (supports params like /join/:code)
+      let matchedHandler: RouteHandler | null = null;
+      let params: RouteParams = {};
+
+      for (const [pattern, handler] of this.routes) {
+        const match = this.matchRoute(pattern, hash);
+        if (match) {
+          matchedHandler = handler;
+          params = match;
+          break;
+        }
       }
-    }
 
-    if (!matchedHandler) {
-      // Fallback to home
-      matchedHandler = this.routes.get('/') || null;
-      params = {};
-    }
+      if (!matchedHandler) {
+        // Fallback to home
+        matchedHandler = this.routes.get('/') || null;
+        params = {};
+      }
 
-    // Clean up previous page
-    if (this.currentCleanup) {
-      this.currentCleanup();
-      this.currentCleanup = null;
-    }
+      // Clean up previous page
+      if (this.currentCleanup) {
+        try {
+          this.currentCleanup();
+        } catch (e) {
+          console.error('Cleanup error:', e);
+        }
+        this.currentCleanup = null;
+      }
 
-    // Render new page
-    if (matchedHandler && this.appContainer) {
-      this.currentRoute = hash;
-      const result = matchedHandler(this.appContainer, params);
+      // Render new page
+      if (matchedHandler && this.appContainer) {
+        this.currentRoute = hash;
+        
+        try {
+          const result = await matchedHandler(this.appContainer, params);
 
-      // Handle async handlers
-      if (result instanceof Promise) {
-        result.then((cleanup) => {
-          if (typeof cleanup === 'function') {
-            this.currentCleanup = cleanup;
+          if (typeof result === 'function') {
+            this.currentCleanup = result;
           }
-        });
-      } else if (typeof result === 'function') {
-        this.currentCleanup = result;
+        } catch (err) {
+          console.error('Failed to render route:', hash, err);
+        }
       }
+    } finally {
+      this.isNavigating = false;
     }
   }
 

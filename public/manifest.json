@@ -60,21 +60,21 @@
             "src": "/screenshots/gameplay-828x1792.png",
             "sizes": "828x1792",
             "type": "image/png",
-            "form_factor": "wide",
+            "form_factor": "narrow",
             "label": "3D Mobile"
         },
         {
             "src": "/screenshots/gameplay-860x1864.png",
             "sizes": "860x1864",
             "type": "image/png",
-            "form_factor": "wide",
+            "form_factor": "narrow",
             "label": "3D iPhone"
         },
         {
             "src": "/screenshots/homepage-828x1792.png",
             "sizes": "828x1792",
             "type": "image/png",
-            "form_factor": "wide",
+            "form_factor": "narrow",
             "label": "Homepage Mobile"
         },
         {

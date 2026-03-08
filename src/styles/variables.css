@@ -3,7 +3,7 @@
    =================================== */
 
 :root {
-  /* ---- Theme Colors (Default: Neon) ---- */
+  /* ---- Theme Colors (Default: Obsidian Luxe) ---- */
   --neon-purple: #bf5af2;
   --neon-purple-glow: rgba(191, 90, 242, 0.4);
   --neon-cyan: #64d2ff;
@@ -19,30 +19,34 @@
   --accent-secondary: var(--neon-cyan);
   --accent-tertiary: var(--neon-pink);
 
-  /* ---- Default Backgrounds (Dark Mode) ---- */
-  --bg-primary: #0a0a1a;
-  --bg-secondary: #12122a;
-  --bg-tertiary: #1a1a3a;
+  /* ---- Layered Backgrounds (AAA Obsidian) ---- */
+  --bg-primary: #050508;
+  --bg-secondary: #0a0a14;
+  --bg-tertiary: #101020;
+  --bg-card: rgba(15, 15, 30, 0.6);
   --bg-card-hover: rgba(255, 255, 255, 0.05);
 
-  /* ---- Glass Effect ---- */
-  --glass-bg: rgba(26, 26, 62, 0.4);
+  /* ---- Glass Effect (Ultra HD) ---- */
+  --glass-bg: rgba(15, 15, 30, 0.4);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 20px;
+  --glass-blur: 40px;
 
-  /* ---- Typography ---- */
-  --font-display: 'Outfit', sans-serif;
+  /* ---- Phantom Typography ---- */
+  --font-logo: 'Audiowide', system-ui;
+  --font-cyber: 'Bitcount Grid Single', monospace;
+  --font-accent: 'Audiowide', sans-serif;
+  --font-display: 'Exo 2', sans-serif;
   --font-body: 'Space Grotesk', sans-serif;
 
-  --text-xs: clamp(0.625rem, 0.5rem + 0.5vw, 0.75rem);
-  --text-sm: clamp(0.75rem, 0.65rem + 0.5vw, 0.875rem);
-  --text-base: clamp(0.875rem, 0.75rem + 0.5vw, 1rem);
-  --text-lg: clamp(1rem, 0.85rem + 0.75vw, 1.25rem);
-  --text-xl: clamp(1.25rem, 1rem + 1vw, 1.5rem);
-  --text-2xl: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
-  --text-3xl: clamp(2rem, 1.5rem + 2vw, 3rem);
-  --text-4xl: clamp(2.5rem, 2rem + 2.5vw, 4rem);
-  --text-hero: clamp(3rem, 2rem + 4vw, 5rem);
+  --text-xs: clamp(0.7rem, 0.6rem + 0.4vw, 0.8rem);
+  --text-sm: clamp(0.8rem, 0.7rem + 0.5vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.15rem);
+  --text-lg: clamp(1.2rem, 1.1rem + 0.75vw, 1.4rem);
+  --text-xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --text-2xl: clamp(2rem, 1.7rem + 1.5vw, 2.5rem);
+  --text-3xl: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  --text-4xl: clamp(3rem, 2.5rem + 2.5vw, 4.5rem);
+  --text-hero: clamp(3.5rem, 2.5rem + 5vw, 6rem);
 }
 
 /* Theme: Cyber Gold (Master Tier) */
@@ -67,8 +71,8 @@ body.theme-emerald {
 
 /* Theme: Obsidian Phantom (Dark Knight) */
 body.theme-obsidian {
-  --bg-primary: #050505;
-  --bg-secondary: #0a0a0a;
+  --bg-primary: #020202;
+  --bg-secondary: #050505;
   --neon-purple: #ffffff;
   --neon-purple-glow: rgba(255, 255, 255, 0.2);
   --neon-cyan: #404040;
@@ -105,7 +109,7 @@ body {
   --gradient-main: linear-gradient(135deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan));
   --gradient-gold: linear-gradient(135deg, #ffd60a, #ff9f0a);
   --gradient-success: linear-gradient(135deg, #30d158, #64d2ff);
-  --gradient-card: linear-gradient(135deg, rgba(191, 90, 242, 0.1), rgba(100, 210, 255, 0.1));
+  --gradient-card: linear-gradient(135deg, rgba(15, 15, 30, 0.4), rgba(30, 30, 60, 0.2));
 
   /* ---- Spacing ---- */
   --space-xs: 0.25rem;
@@ -113,30 +117,30 @@ body {
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
+  --space-2xl: 3.5rem;
+  --space-3xl: 5rem;
 
   /* ---- Border Radius ---- */
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --radius-full: 9999px;
 
   /* ---- Shadows ---- */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-neon-purple: 0 0 20px var(--neon-purple-glow), 0 0 40px rgba(191, 90, 242, 0.2);
-  --shadow-neon-cyan: 0 0 20px var(--neon-cyan-glow), 0 0 40px rgba(100, 210, 255, 0.2);
-  --shadow-neon-pink: 0 0 20px var(--neon-pink-glow), 0 0 40px rgba(255, 55, 95, 0.2);
-  --shadow-neon-gold: 0 0 20px var(--neon-gold-glow), 0 0 40px rgba(255, 214, 10, 0.2);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-neon-purple: 0 0 25px var(--neon-purple-glow), 0 0 50px rgba(191, 90, 242, 0.3);
+  --shadow-neon-cyan: 0 0 25px var(--neon-cyan-glow), 0 0 50px rgba(100, 210, 255, 0.3);
+  --shadow-neon-pink: 0 0 25px var(--neon-pink-glow), 0 0 50px rgba(255, 55, 95, 0.3);
+  --shadow-neon-gold: 0 0 25px var(--neon-gold-glow), 0 0 50px rgba(255, 214, 10, 0.3);
 
   /* ---- Transitions ---- */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast: 150ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-base: 300ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-slow: 500ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-spring: 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   /* ---- Z-Index ---- */
   --z-base: 1;
@@ -144,4 +148,28 @@ body {
   --z-modal: 200;
   --z-toast: 300;
   --z-loading: 400;
+}
+
+/* ---- Premium Accents ---- */
+.hero-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle at center, rgba(191, 90, 242, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(80px);
+}
+
+.btn-glow {
+  box-shadow: 0 10px 30px -10px var(--neon-purple-glow);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-glow:hover {
+  box-shadow: 0 15px 40px -5px var(--neon-purple-glow);
+  transform: translateY(-2px);
 }

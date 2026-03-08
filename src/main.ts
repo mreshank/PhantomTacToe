@@ -3,12 +3,7 @@
    ======================================== */
 
 // Styles
-import './styles/variables.css';
-import './styles/base.css';
-import './styles/components.css';
-import './styles/animations.css';
-import './styles/responsive.css';
-import './styles/effects.css';
+import './styles/main.css';
 
 // Core modules
 import { router } from './core/Router';
@@ -27,15 +22,8 @@ import {
   iconHeart,
 } from './utils/icons';
 
-// Pages
-import { renderHome } from './pages/HomePage';
-import { renderGame } from './pages/GamePage';
-import { renderOnlineLobby, renderJoinRoom } from './pages/OnlineLobbyPage';
-import { renderRewards } from './pages/RewardsPage';
-import { renderLeaderboard } from './pages/LeaderboardPage';
-import { renderSettings } from './pages/SettingsPage';
-import { renderFriends } from './pages/FriendsPage';
-import { renderLocalNetworkLobby } from './pages/LocalNetworkLobbyPage';
+// Pages - Now lazy loaded
+// renderHome, renderGame, etc. are imported dynamically in initApp
 
 // Initialize Convex as Global Source of Truth
 const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL;
@@ -86,52 +74,64 @@ async function initApp(): Promise<void> {
   // Setup router
   router.setContainer(pageContainer);
 
-  router.addRoute('/', (c) => {
+  router.addRoute('/', async (c) => {
+    const { renderHome } = await import('./pages/HomePage');
     renderHome(c);
     updateNav('/');
   });
-  router.addRoute('/play/solo', (c) => {
+  router.addRoute('/play/solo', async (c) => {
     updateNav('/play');
+    const { renderGame } = await import('./pages/GamePage');
     return renderGame(c, { mode: 'solo' });
   });
-  router.addRoute('/play/local', (c) => {
+  router.addRoute('/play/local', async (c) => {
     updateNav('/play');
+    const { renderGame } = await import('./pages/GamePage');
     return renderGame(c, { mode: 'local' });
   });
-  router.addRoute('/play/online', (c) => {
+  router.addRoute('/play/online', async (c) => {
     updateNav('/play');
+    const { renderGame } = await import('./pages/GamePage');
     return renderGame(c, { mode: 'online' });
   });
-  router.addRoute('/play/online/lobby', (c) => {
+  router.addRoute('/play/online/lobby', async (c) => {
     updateNav('/play');
+    const { renderOnlineLobby } = await import('./pages/OnlineLobbyPage');
     renderOnlineLobby(c);
   });
-  router.addRoute('/play/local-network', (c) => {
+  router.addRoute('/play/local-network', async (c) => {
     updateNav('/play');
+    const { renderGame } = await import('./pages/GamePage');
     return renderGame(c, { mode: 'local-network' });
   });
-  router.addRoute('/play/local-network/lobby', (c) => {
+  router.addRoute('/play/local-network/lobby', async (c) => {
     updateNav('/play');
+    const { renderLocalNetworkLobby } = await import('./pages/LocalNetworkLobbyPage');
     return renderLocalNetworkLobby(c);
   });
-  router.addRoute('/join/:code', (c, params) => {
+  router.addRoute('/join/:code', async (c, params) => {
     updateNav('/play');
+    const { renderJoinRoom } = await import('./pages/OnlineLobbyPage');
     renderJoinRoom(c, params);
   });
-  router.addRoute('/rewards', (c) => {
+  router.addRoute('/rewards', async (c) => {
     updateNav('/rewards');
+    const { renderRewards } = await import('./pages/RewardsPage');
     renderRewards(c);
   });
-  router.addRoute('/leaderboard', (c) => {
+  router.addRoute('/leaderboard', async (c) => {
     updateNav('/leaderboard');
+    const { renderLeaderboard } = await import('./pages/LeaderboardPage');
     renderLeaderboard(c);
   });
-  router.addRoute('/settings', (c) => {
+  router.addRoute('/settings', async (c) => {
     updateNav('/settings');
+    const { renderSettings } = await import('./pages/SettingsPage');
     renderSettings(c);
   });
-  router.addRoute('/friends', (c) => {
+  router.addRoute('/friends', async (c) => {
     updateNav('/friends');
+    const { renderFriends } = await import('./pages/FriendsPage');
     return renderFriends(c);
   });
 
@@ -149,7 +149,7 @@ async function initApp(): Promise<void> {
     if (loadingScreen) loadingScreen.classList.add('hidden');
     // Start router
     router.start();
-  }, 1200);
+  }, 300);
 }
 
 function createNavigation(app: HTMLElement): void {
@@ -253,19 +253,19 @@ function createBackgroundParticles(app: HTMLElement): void {
   app.insertBefore(container, app.firstChild);
 }
 
-// ---- Service Worker Registration ---- //
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
-      // SW registration failed, app still works
-    });
-  });
-}
+// ---- Start ---- //
 
 // ---- Start ---- //
-document.addEventListener('DOMContentLoaded', initApp);
+let isInitialized = false;
 
-// If DOM already loaded
-if (document.readyState !== 'loading') {
-  initApp();
+async function startApp() {
+  if (isInitialized) return;
+  isInitialized = true;
+  await initApp();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
 }

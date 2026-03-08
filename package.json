@@ -22,8 +22,10 @@
   },
   "dependencies": {
     "@clerk/clerk-js": "^5.125.4",
+    "@tailwindcss/vite": "^4.2.1",
     "convex": "^1.32.0",
     "peerjs": "^1.5.5",
+    "tailwindcss": "^4.2.1",
     "three": "^0.183.2"
   }
 }

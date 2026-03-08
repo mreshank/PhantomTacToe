@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* Design System Modules */
+@import "./variables.css";
+@import "./base.css";
+@import "./components.css";
+@import "./animations.css";
+@import "./effects.css";
+@import "./responsive.css";

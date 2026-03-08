@@ -129,7 +129,7 @@ export function renderRewards(container: HTMLElement) {
       <div class="section-header">
         <h2 class="section-title"><span class="icon-header" style="color:var(--neon-purple)">${iconSparkle}</span> Elite Personalization</h2>
       </div>
-      <div class="personalization-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-xl)">
+      <div class="personalization-grid">
         <!-- Global Themes -->
         <div class="card">
           <h3 style="font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: var(--space-md)">Global Themes</h3>
@@ -142,7 +142,7 @@ export function renderRewards(container: HTMLElement) {
                 <div class="shop-item-horizontal ${isUnlocked ? "unlocked" : ""}" data-purchase="theme" data-id="${t}" data-price="${price}">
                   <div class="theme-dot theme-${t}"></div>
                   <div style="flex: 1">
-                    <div style="font-weight: 600">${t.charAt(0).toUpperCase() + t.slice(1)}</div>
+                    <div style="font-weight: 600; text-transform: capitalize">${t}</div>
                     <div style="font-size: var(--text-xs); color: var(--text-tertiary)">Global site colors</div>
                   </div>
                   <div class="price-tag">${isUnlocked ? `<span style="color:var(--neon-green)">${iconCheck}</span>` : `<span class="icon-xs">${iconCoin}</span> ${price}`}</div>
@@ -163,7 +163,7 @@ export function renderRewards(container: HTMLElement) {
                 const price = f === "none" ? 0 : f === "gold" ? 2000 : 800;
                 return `
                 <div class="shop-item-horizontal ${isUnlocked ? "unlocked" : ""}" data-purchase="frame" data-id="${f}" data-price="${price}">
-                  <div class="profile-frame frame-${f}" style="width: 24px; height: 24px; border-radius: 50%"></div>
+                  <div class="profile-frame frame-${f}" style="width: 32px; height: 32px; border-radius: 50%"></div>
                   <div style="flex: 1">
                     <div style="font-weight: 600">${f === "none" ? "No Frame" : f.charAt(0).toUpperCase() + f.slice(1) + " Pulsar"}</div>
                     <div style="font-size: var(--text-xs); color: var(--text-tertiary)">Avatar border effect</div>

@@ -41,6 +41,10 @@
   <link rel="alternate" hreflang="en" href="https://phantomtactoe.mreshank.com/" />
   <link rel="alternate" hreflang="x-default" href="https://phantomtactoe.mreshank.com/" />
 
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
   <!-- Open Graph / Facebook — Comprehensive -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://phantomtactoe.mreshank.com/" />
@@ -93,10 +97,107 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
 
-  <!-- Fonts -->
+  <!-- Critical Inline CSS (FCP Optimization) -->
+  <style>
+    :root {
+      --bg-primary: #020205;
+      --text-primary: #ffffff;
+      --neon-purple: #bf5af2;
+      --neon-purple-glow: rgba(191, 90, 242, 0.4);
+      --gradient-main: linear-gradient(135deg, #bf5af2, #ff375f, #64d2ff);
+      --font-display: 'Audiowide', system-ui;
+      --z-loading: 400;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      margin: 0;
+      font-family: var(--font-display);
+      overflow-x: hidden;
+    }
+
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-loading);
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s cubic-bezier(0.2, 0, 0, 1), visibility 0.8s;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-content {
+      text-align: center;
+    }
+
+    .loader-logo {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      font-size: 2.5rem;
+      font-weight: normal;
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+    }
+
+    .logo-inf {
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-toe {
+      color: var(--text-primary);
+      text-shadow: 0 0 30px var(--neon-purple-glow);
+    }
+
+    .loader-bar {
+      width: 240px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 9999px;
+      margin: 0 auto 1rem;
+      overflow: hidden;
+    }
+
+    .loader-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--gradient-main);
+      border-radius: 9999px;
+      animation: loader-fill 2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    }
+
+    .loader-text {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    @keyframes loader-fill {
+      0% {
+        width: 0%;
+      }
+
+      100% {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <!-- Fonts (Deferred) -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bitcount+Grid+Single:wght@100..900&family=Chokokutai&family=Monoton&family=Passero+One&Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bitcount+Grid+Single:wght@100..900&family=Monoton&family=Passero+One&family=Syncopate:wght@400;700&family=Exo+2:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'">
 
   <!-- ======== Structured Data: VideoGame (Primary) ======== -->
   <script type="application/ld+json">
@@ -343,7 +444,7 @@
 </head>
 
 <body>
-  <div id="app">
+  <main id="app">
     <!-- App shell rendered by JS -->
     <div id="loading-screen" aria-label="Loading Phantom Tac Toe">
       <div class="loader-content">
@@ -356,7 +457,7 @@
         <p class="loader-text">Loading the vibes...</p>
       </div>
     </div>
-  </div>
+  </main>
 
   <!-- SEO: Rich hidden content for crawlers (visible when JS disabled) -->
   <noscript>
